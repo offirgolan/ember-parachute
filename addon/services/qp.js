@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { HAS_PARACHUTE, QP_BUILDER } from '../-private/symbols';
 
 const {
   get,
@@ -86,7 +87,7 @@ export default Ember.Service.extend({
    */
   setDefaultValue(routeName, param, defaultValue) {
     let { controller } = this.cacheFor(routeName);
-    let qpBuilder = controller.get('__queryParamsBuilder__');
+    let qpBuilder = controller.get(QP_BUILDER);
 
     assert(`[ember-parachute] The query paramater '${param}' does not exist.`, qpBuilder.options[param]);
     qpBuilder.options[param].defaultValue = defaultValue;
@@ -110,7 +111,7 @@ export default Ember.Service.extend({
       assert(`[ember-parachute] Could not access the controller for the route '${routeName}'.`, isPresent(controller));
       assert(`[ember-parachute] The controller for the route '${routeName}' is not set up with ember-parachute.`, this._hasParachute(controller));
 
-      let qpBuilder = get(controller, '__queryParamsBuilder__');
+      let qpBuilder = get(controller, QP_BUILDER);
 
       cache[routeName] = {
         controller,
@@ -139,8 +140,13 @@ export default Ember.Service.extend({
       let { controller, queryParams } = this.cacheFor(routeName);
       let changedKeys = keys(changes);
 
-      // Convert the changes hash to use `key` instead of `name`
-      // to keep a common convention
+      /*
+        Convert the changes hash to use `key` instead of `name`
+        to keep a common convention.
+
+        ex) { key: 'sortDirection', name: 'sort_direction' }
+            We use `key` everywhere but the changes object uses `name`.
+       */
       let changed = queryParams.reduce((changed, data) => {
         if (changedKeys.includes(data.name)) {
           changed[data.key] = changes[data.name];
@@ -150,6 +156,7 @@ export default Ember.Service.extend({
       }, {});
 
       tryInvoke(controller, 'queryParamsDidChange', [{
+        routeName,
         changed,
         queryParams: this.queryParamsFor(routeName),
         shouldRefresh: queryParams.any((data) => {
@@ -168,7 +175,7 @@ export default Ember.Service.extend({
    * @return {Boolean}
    */
   _hasParachute(controller) {
-    return controller && get(controller, '__hasParachute__');
+    return controller && get(controller, HAS_PARACHUTE);
   },
 
   /**

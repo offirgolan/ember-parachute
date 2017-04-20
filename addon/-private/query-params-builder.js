@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { HAS_PARACHUTE, QP_BUILDER } from './symbols';
 
 const {
   get,
@@ -51,8 +52,8 @@ export default class QueryParamsBuilder {
     }, {});
 
     return Mixin.create(defaultValues, {
-      __hasParachute__: true,
-      __queryParamsBuilder__: this,
+      [HAS_PARACHUTE]: true,
+      [QP_BUILDER]: this,
       queryParams,
       queryParamsDidChange() {}
     });
