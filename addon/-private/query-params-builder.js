@@ -4,7 +4,8 @@ import { HAS_PARACHUTE, QP_BUILDER } from './symbols';
 const {
   get,
   Mixin,
-  assign
+  assign,
+  computed
 } = Ember;
 
 const {
@@ -51,10 +52,18 @@ export default class QueryParamsBuilder {
       return defaults;
     }, {});
 
+    let allQueryParams = computed(...keys(options), function() {
+      return keys(options).reduce((qps, key) => {
+        qps[key] = options[key].value(this);
+        return qps;
+      }, {});
+    }).readOnly();
+
     return Mixin.create(defaultValues, {
       [HAS_PARACHUTE]: true,
       [QP_BUILDER]: this,
       queryParams,
+      allQueryParams,
       queryParamsDidChange() {}
     });
   }
