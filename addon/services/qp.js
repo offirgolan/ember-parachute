@@ -5,7 +5,9 @@ const {
   assign,
   assert,
   isEmpty,
-  tryInvoke
+  isPresent,
+  tryInvoke,
+  getOwner
 } = Ember;
 
 const {
@@ -15,7 +17,7 @@ const {
 export default Ember.Service.extend({
   init() {
     this._super(...arguments);
-    this.cache = {};
+    this._cache = {};
   },
 
   /**
@@ -24,31 +26,15 @@ export default Ember.Service.extend({
    * @method update
    * @private
    * @param  {String} routeName
-   * @param  {Ember.Controller} controller
    * @param  {Object} changed
    * @param  {Object} totalPresent
    * @param  {Object} removed
    * @return
    */
   update(routeName, controller, changed, totalPresent, removed) {
-    if (!controller || controller && !get(controller, '__hasParachute__')) {
-      return;
+    if (this._hasParachute(controller)) {
+      this._scheduleChangeEvent(routeName, assign({}, changed, removed));
     }
-
-    let cache = this.cache;
-    let qpBuilder = controller.get('__queryParamsBuilder__');
-
-    if (routeName && controller && !cache[routeName]) {
-      cache[routeName] = {
-        controller,
-        qpMap: qpBuilder.options,
-        queryParams: keys(qpBuilder.options).map((key) => {
-          return qpBuilder.options[key];
-        })
-      }
-    }
-
-    this._scheduleChangeEvent(routeName, assign({}, changed, removed));
   },
 
   /**
@@ -60,7 +46,7 @@ export default Ember.Service.extend({
    * @return {Object}
    */
   queryParamsFor(routeName) {
-    let { controller, queryParams } = this.cache[routeName];
+    let { controller, queryParams } = this.cacheFor(routeName);
 
     return queryParams.reduce((qps, data) => {
       qps[data.key] = data.value(controller);
@@ -77,7 +63,7 @@ export default Ember.Service.extend({
    * @param  {...string} params
    */
   resetParams(routeName, ...params) {
-    let { controller, queryParams } = this.cache[routeName];
+    let { controller, queryParams } = this.cacheFor(routeName);
 
     let defaults = queryParams.reduce((defaults, data) => {
       if (isEmpty(params) || params.includes(data.key)) {
@@ -99,11 +85,43 @@ export default Ember.Service.extend({
    * @param  {*} defaultValue
    */
   setDefaultValue(routeName, param, defaultValue) {
-    let { controller } = this.cache[routeName];
+    let { controller } = this.cacheFor(routeName);
     let qpBuilder = controller.get('__queryParamsBuilder__');
 
-    assert(`[ember-parachute] The query paramter '${param}' does not exist.`, qpBuilder.options[param]);
+    assert(`[ember-parachute] The query paramater '${param}' does not exist.`, qpBuilder.options[param]);
     qpBuilder.options[param].defaultValue = defaultValue;
+  },
+
+  /**
+   * Get the cache for a given route name.
+   * If it doesnt exist, then create it (if possible).
+   *
+   * @method cacheFor
+   * @private
+   * @param  {String} routeName
+   * @return {Object}
+   */
+  cacheFor(routeName) {
+    let cache = this._cache;
+
+    if (!cache[routeName]) {
+      let controller = this._lookupController(routeName);
+
+      assert(`[ember-parachute] Could not access the controller for the route '${routeName}'.`, isPresent(controller));
+      assert(`[ember-parachute] The controller for the route '${routeName}' is not set up with ember-parachute.`, this._hasParachute(controller));
+
+      let qpBuilder = get(controller, '__queryParamsBuilder__');
+
+      cache[routeName] = {
+        controller,
+        qpMap: qpBuilder.options,
+        queryParams: keys(qpBuilder.options).map((key) => {
+          return qpBuilder.options[key];
+        })
+      }
+    }
+
+    return cache[routeName];
   },
 
   /**
@@ -117,8 +135,8 @@ export default Ember.Service.extend({
    * @return
    */
   _scheduleChangeEvent(routeName, changes) {
-    Ember.run.schedule('render', () => {
-      let { controller, queryParams } = this.cache[routeName];
+    Ember.run.schedule('afterRender', () => {
+      let { controller, queryParams } = this.cacheFor(routeName);
       let changedKeys = keys(changes);
 
       // Convert the changes hash to use `key` instead of `name`
@@ -139,5 +157,29 @@ export default Ember.Service.extend({
         })
       }]);
     });
-  }
+  },
+
+  /**
+   * Check if the given controller has ember-parachute mixed in.
+   *
+   * @method _hasParachute
+   * @private
+   * @param  {Object} controller
+   * @return {Boolean}
+   */
+  _hasParachute(controller) {
+    return controller && get(controller, '__hasParachute__');
+  },
+
+  /**
+   * Lookup the controller for a given route name
+   *
+   * @method _lookupController
+   * @private
+   * @param  {String} routeName
+   * @return {Ember.Controller}
+   */
+  _lookupController(routeName) {
+    return getOwner(this).lookup(`controller:${routeName}`);
+  },
 });
