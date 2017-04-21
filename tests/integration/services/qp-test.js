@@ -52,7 +52,7 @@ moduleFor('service:qp', 'Integration | Service | qp', {
   }
 });
 
-test('queryParamsDidChange get called on updated', function(assert) {
+test('queryParamsDidChange get called on update', function(assert) {
   assert.expect(1);
 
   let done = assert.async();
@@ -69,7 +69,7 @@ test('queryParamsDidChange get called on updated', function(assert) {
   });
 });
 
-test('queryParamsDidChange event gets triggered on updated', function(assert) {
+test('queryParamsDidChange event gets triggered on update', function(assert) {
   assert.expect(1);
 
   let done = assert.async();
