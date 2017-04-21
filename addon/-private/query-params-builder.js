@@ -5,7 +5,9 @@ const {
   get,
   Mixin,
   assign,
-  computed
+  assert,
+  isEmpty,
+  computed,
 } = Ember;
 
 const {
@@ -14,16 +16,20 @@ const {
 
 export default class QueryParamsBuilder {
   constructor(queryParams = {}) {
-    this.queryParams = this._normalizeOptions(queryParams);
+    assert('[ember-parachute] You cannot pass an empty object to the query params builder.', queryParams && !isEmpty(keys(queryParams)));
+
+    this._queryParams = queryParams;
+    this.queryParams = this._normalizeQueryParams(queryParams);
     this.Mixin = this._generateMixin();
   }
 
-  extend(queryParams = {}) {
-    return new QueryParamsBuilder(assign({}, this.queryParams, queryParams));
+  extend() {
+    return new QueryParamsBuilder(assign({}, this._queryParams, ...arguments));
   }
 
-  _normalizeOptions(queryParams) {
+  _normalizeQueryParams(queryParams) {
     return keys(queryParams).reduce((o, key) => {
+      let queryParam = queryParams[key];
       let defaults = {
         key,
         name: key,
@@ -34,7 +40,9 @@ export default class QueryParamsBuilder {
         }
       };
 
-      o[key] = assign(defaults, queryParams[key]);
+      assert(`[ember-parachute] The query paramater ${key} must specify an object.`, queryParam && typeof queryParam === 'object');
+
+      o[key] = assign(defaults, queryParam);
 
       return o;
     }, {});
