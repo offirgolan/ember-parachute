@@ -50,10 +50,10 @@ export default Ember.Service.extend({
    * @return {Object}
    */
   queryParamsFor(routeName) {
-    let { controller, queryParams } = this.cacheFor(routeName);
+    let { controller, queryParamsArray } = this.cacheFor(routeName);
 
-    return queryParams.reduce((qps, data) => {
-      qps[data.key] = data.value(controller);
+    return queryParamsArray.reduce((qps, qp) => {
+      qps[qp.key] = qp.value(controller);
       return qps;
     }, {});
   },
@@ -67,11 +67,11 @@ export default Ember.Service.extend({
    * @param  {...string} params
    */
   resetParams(routeName, ...params) {
-    let { controller, queryParams } = this.cacheFor(routeName);
+    let { controller, queryParamsArray } = this.cacheFor(routeName);
 
-    let defaults = queryParams.reduce((defaults, data) => {
-      if (isEmpty(params) || params.includes(data.key)) {
-        defaults[data.key] = data.defaultValue;
+    let defaults = queryParamsArray.reduce((defaults, qp) => {
+      if (isEmpty(params) || params.includes(qp.key)) {
+        defaults[qp.key] = qp.defaultValue;
       }
       return defaults;
     }, {});
@@ -91,9 +91,10 @@ export default Ember.Service.extend({
   setDefaultValue(routeName, param, defaultValue) {
     let { controller } = this.cacheFor(routeName);
     let qpBuilder = controller.get(QP_BUILDER);
+    let queryParam = qpBuilder.queryParams[param];
 
-    assert(`[ember-parachute] The query paramater '${param}' does not exist.`, qpBuilder.options[param]);
-    qpBuilder.options[param].defaultValue = defaultValue;
+    assert(`[ember-parachute] The query paramater '${param}' does not exist.`, queryParam);
+    queryParam.defaultValue = defaultValue;
   },
 
   /**
@@ -118,9 +119,9 @@ export default Ember.Service.extend({
 
       cache[routeName] = {
         controller,
-        qpMap: qpBuilder.options,
-        queryParams: emberArray(keys(qpBuilder.options).map((key) => {
-          return qpBuilder.options[key];
+        queryParams: qpBuilder.queryParams,
+        queryParamsArray: emberArray(keys(qpBuilder.queryParams).map((key) => {
+          return qpBuilder.queryParams[key];
         }))
       }
     }
@@ -140,16 +141,16 @@ export default Ember.Service.extend({
    */
   _scheduleChangeEvent(routeName, changes = {}, present = {}) {
     Ember.run.schedule('afterRender', () => {
-      let { controller, queryParams } = this.cacheFor(routeName);
+      let { controller, queryParamsArray } = this.cacheFor(routeName);
       let changedKeys = keys(changes);
 
       let objToPass = {
         routeName,
-        changed: normalizeNamedParams(changes, queryParams),
-        present: normalizeNamedParams(present, queryParams),
+        changed: normalizeNamedParams(changes, queryParamsArray),
+        present: normalizeNamedParams(present, queryParamsArray),
         queryParams: this.queryParamsFor(routeName),
-        shouldRefresh: queryParams.any((data) => {
-          return changedKeys.includes(data.name) && data.refresh;
+        shouldRefresh: queryParamsArray.any((qp) => {
+          return changedKeys.includes(qp.name) && qp.refresh;
         })
       };
 

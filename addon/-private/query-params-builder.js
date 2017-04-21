@@ -13,17 +13,17 @@ const {
 } = Object;
 
 export default class QueryParamsBuilder {
-  constructor(options = {}) {
-    this.options = this._normalizeOptions(options);
+  constructor(queryParams = {}) {
+    this.queryParams = this._normalizeOptions(queryParams);
     this.Mixin = this._generateMixin();
   }
 
-  extend(options = {}) {
-    return new QueryParamsBuilder(assign({}, this.options, options));
+  extend(queryParams = {}) {
+    return new QueryParamsBuilder(assign({}, this.queryParams, queryParams));
   }
 
-  _normalizeOptions(options) {
-    return keys(options).reduce((o, key) => {
+  _normalizeOptions(queryParams) {
+    return keys(queryParams).reduce((o, key) => {
       let defaults = {
         key,
         name: key,
@@ -34,27 +34,31 @@ export default class QueryParamsBuilder {
         }
       };
 
-      o[key] = assign(defaults, options[key]);
+      o[key] = assign(defaults, queryParams[key]);
 
       return o;
     }, {});
   }
 
   _generateMixin() {
-    let options = this.options;
-    let queryParams = keys(options).reduce((qps, key) => {
-      qps[key] = options[key].name || key;
+    let queryParams = this.queryParams;
+
+    // Create the `key` to `name` mapping used by Ember to register the QPs
+    let queryParamsMap = keys(queryParams).reduce((qps, key) => {
+      qps[key] = queryParams[key].name || key;
       return qps;
     }, {});
 
-    let defaultValues = keys(options).reduce((defaults, key) => {
-      defaults[key] = options[key].defaultValue;
+    // Get all the default values for each QP `key` to be set onto the controller
+    let defaultValues = keys(queryParams).reduce((defaults, key) => {
+      defaults[key] = queryParams[key].defaultValue;
       return defaults;
     }, {});
 
-    let allQueryParams = computed(...keys(options), function() {
-      return keys(options).reduce((qps, key) => {
-        qps[key] = options[key].value(this);
+    // Create a CP that is a collection of all QPs and their value
+    let allQueryParams = computed(...keys(queryParams), function() {
+      return keys(queryParams).reduce((qps, key) => {
+        qps[key] = queryParams[key].value(this);
         return qps;
       }, {});
     }).readOnly();
@@ -62,8 +66,8 @@ export default class QueryParamsBuilder {
     return Mixin.create(defaultValues, {
       [HAS_PARACHUTE]: true,
       [QP_BUILDER]: this,
-      queryParams,
       allQueryParams,
+      queryParams: queryParamsMap,
       queryParamsDidChange() {}
     });
   }
