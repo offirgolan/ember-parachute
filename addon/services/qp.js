@@ -4,6 +4,7 @@ import { HAS_PARACHUTE, QP_BUILDER } from '../-private/symbols';
 
 const {
   get,
+  run,
   assign,
   assert,
   isEmpty,
@@ -70,7 +71,7 @@ export default Ember.Service.extend({
     let { controller, queryParamsArray } = this.cacheFor(routeName);
 
     let defaults = queryParamsArray.reduce((defaults, qp) => {
-      if (isEmpty(params) || params.includes(qp.key)) {
+      if (isEmpty(params) || params.indexOf(qp.key) > -1) {
         defaults[qp.key] = qp.defaultValue;
       }
       return defaults;
@@ -140,7 +141,7 @@ export default Ember.Service.extend({
    * @return
    */
   _scheduleChangeEvent(routeName, changes = {}, present = {}) {
-    Ember.run.schedule('afterRender', () => {
+    run.schedule('afterRender', () => {
       let { controller, queryParamsArray } = this.cacheFor(routeName);
       let changedKeys = keys(changes);
 
@@ -150,7 +151,7 @@ export default Ember.Service.extend({
         present: normalizeNamedParams(present, queryParamsArray),
         queryParams: this.queryParamsFor(routeName),
         shouldRefresh: queryParamsArray.any((qp) => {
-          return changedKeys.includes(qp.name) && qp.refresh;
+          return changedKeys.indexOf(qp.name) > -1 && qp.refresh;
         })
       };
 
