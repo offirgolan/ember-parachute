@@ -35,9 +35,9 @@ export default Ember.Service.extend({
    * @param  {Object} removed
    * @return
    */
-  update(routeName, controller, changed, totalPresent, removed) {
+  update(routeName, controller, changed = {}, present = {}, removed = {}) {
     if (this._hasParachute(controller)) {
-      this._scheduleChangeEvent(routeName, assign({}, changed, removed), totalPresent);
+      this._scheduleChangeEvent(routeName, assign({}, changed, removed), present);
     }
   },
 

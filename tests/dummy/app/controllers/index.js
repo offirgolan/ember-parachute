@@ -32,10 +32,10 @@ const QueryParams = buildQueryParams({
 
 export default Ember.Controller.extend(QueryParams.Mixin, {
   queryParamsDidChange() {
-    console.log(...arguments);
+    // console.log(...arguments);
   },
 
   onQueryParamsDidChange: Ember.on('queryParamsDidChange', function() {
-    console.log('onQueryParamsDidChange', ...arguments);
+    // console.log('onQueryParamsDidChange', ...arguments);
   })
 });
