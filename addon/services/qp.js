@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import normalizeNamedParams from '../utils/normalized-named-params';
 import { HAS_PARACHUTE, QP_BUILDER } from '../-private/symbols';
 
 const {
@@ -8,7 +9,9 @@ const {
   isEmpty,
   isPresent,
   tryInvoke,
-  getOwner
+  getOwner,
+  sendEvent,
+  A: emberArray
 } = Ember;
 
 const {
@@ -34,7 +37,7 @@ export default Ember.Service.extend({
    */
   update(routeName, controller, changed, totalPresent, removed) {
     if (this._hasParachute(controller)) {
-      this._scheduleChangeEvent(routeName, assign({}, changed, removed));
+      this._scheduleChangeEvent(routeName, assign({}, changed, removed), totalPresent);
     }
   },
 
@@ -116,9 +119,9 @@ export default Ember.Service.extend({
       cache[routeName] = {
         controller,
         qpMap: qpBuilder.options,
-        queryParams: keys(qpBuilder.options).map((key) => {
+        queryParams: emberArray(keys(qpBuilder.options).map((key) => {
           return qpBuilder.options[key];
-        })
+        }))
       }
     }
 
@@ -131,38 +134,27 @@ export default Ember.Service.extend({
    * @method _scheduleChangeEvent
    * @private
    * @param  {String} routeName
-   * @param  {Object} changed
-   * @param  {Object} removed
+   * @param  {Object} changes
+   * @param  {Object} present
    * @return
    */
-  _scheduleChangeEvent(routeName, changes) {
+  _scheduleChangeEvent(routeName, changes = {}, present = {}) {
     Ember.run.schedule('afterRender', () => {
       let { controller, queryParams } = this.cacheFor(routeName);
       let changedKeys = keys(changes);
 
-      /*
-        Convert the changes hash to use `key` instead of `name`
-        to keep a common convention.
-
-        ex) { key: 'sortDirection', name: 'sort_direction' }
-            We use `key` everywhere but the changes object uses `name`.
-       */
-      let changed = queryParams.reduce((changed, data) => {
-        if (changedKeys.includes(data.name)) {
-          changed[data.key] = changes[data.name];
-        }
-
-        return changed;
-      }, {});
-
-      tryInvoke(controller, 'queryParamsDidChange', [{
+      let objToPass = {
         routeName,
-        changed,
+        changed: normalizeNamedParams(changes, queryParams),
+        present: normalizeNamedParams(present, queryParams),
         queryParams: this.queryParamsFor(routeName),
         shouldRefresh: queryParams.any((data) => {
           return changedKeys.includes(data.name) && data.refresh;
         })
-      }]);
+      };
+
+      tryInvoke(controller, 'queryParamsDidChange', [ objToPass ]);
+      sendEvent(controller, 'queryParamsDidChange', [ objToPass ]);
     });
   },
 
