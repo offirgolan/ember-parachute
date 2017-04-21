@@ -5,7 +5,9 @@ const {
   get,
   Mixin,
   assign,
-  computed
+  assert,
+  isEmpty,
+  computed,
 } = Ember;
 
 const {
@@ -13,17 +15,21 @@ const {
 } = Object;
 
 export default class QueryParamsBuilder {
-  constructor(options = {}) {
-    this.options = this._normalizeOptions(options);
+  constructor(queryParams = {}) {
+    assert('[ember-parachute] You cannot pass an empty object to the query params builder.', queryParams && !isEmpty(keys(queryParams)));
+
+    this._queryParams = queryParams;
+    this.queryParams = this._normalizeQueryParams(queryParams);
     this.Mixin = this._generateMixin();
   }
 
-  extend(options = {}) {
-    return new QueryParamsBuilder(assign({}, this.options, options));
+  extend() {
+    return new QueryParamsBuilder(assign({}, this._queryParams, ...arguments));
   }
 
-  _normalizeOptions(options) {
-    return keys(options).reduce((o, key) => {
+  _normalizeQueryParams(queryParams) {
+    return keys(queryParams).reduce((o, key) => {
+      let queryParam = queryParams[key];
       let defaults = {
         key,
         name: key,
@@ -34,27 +40,33 @@ export default class QueryParamsBuilder {
         }
       };
 
-      o[key] = assign(defaults, options[key]);
+      assert(`[ember-parachute] The query paramater ${key} must specify an object.`, queryParam && typeof queryParam === 'object');
+
+      o[key] = assign(defaults, queryParam);
 
       return o;
     }, {});
   }
 
   _generateMixin() {
-    let options = this.options;
-    let queryParams = keys(options).reduce((qps, key) => {
-      qps[key] = options[key].name || key;
+    let queryParams = this.queryParams;
+
+    // Create the `key` to `name` mapping used by Ember to register the QPs
+    let queryParamsMap = keys(queryParams).reduce((qps, key) => {
+      qps[key] = queryParams[key].name || key;
       return qps;
     }, {});
 
-    let defaultValues = keys(options).reduce((defaults, key) => {
-      defaults[key] = options[key].defaultValue;
+    // Get all the default values for each QP `key` to be set onto the controller
+    let defaultValues = keys(queryParams).reduce((defaults, key) => {
+      defaults[key] = queryParams[key].defaultValue;
       return defaults;
     }, {});
 
-    let allQueryParams = computed(...keys(options), function() {
-      return keys(options).reduce((qps, key) => {
-        qps[key] = options[key].value(this);
+    // Create a CP that is a collection of all QPs and their value
+    let allQueryParams = computed(...keys(queryParams), function() {
+      return keys(queryParams).reduce((qps, key) => {
+        qps[key] = queryParams[key].value(this);
         return qps;
       }, {});
     }).readOnly();
@@ -62,8 +74,8 @@ export default class QueryParamsBuilder {
     return Mixin.create(defaultValues, {
       [HAS_PARACHUTE]: true,
       [QP_BUILDER]: this,
-      queryParams,
       allQueryParams,
+      queryParams: queryParamsMap,
       queryParamsDidChange() {}
     });
   }

@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import normalizeNamedParams from '../utils/normalized-named-params';
 import { HAS_PARACHUTE, QP_BUILDER } from '../-private/symbols';
 
 const {
@@ -8,7 +9,9 @@ const {
   isEmpty,
   isPresent,
   tryInvoke,
-  getOwner
+  getOwner,
+  sendEvent,
+  A: emberArray
 } = Ember;
 
 const {
@@ -32,9 +35,9 @@ export default Ember.Service.extend({
    * @param  {Object} removed
    * @return
    */
-  update(routeName, controller, changed, totalPresent, removed) {
+  update(routeName, controller, changed = {}, present = {}, removed = {}) {
     if (this._hasParachute(controller)) {
-      this._scheduleChangeEvent(routeName, assign({}, changed, removed));
+      this._scheduleChangeEvent(routeName, assign({}, changed, removed), present);
     }
   },
 
@@ -47,10 +50,10 @@ export default Ember.Service.extend({
    * @return {Object}
    */
   queryParamsFor(routeName) {
-    let { controller, queryParams } = this.cacheFor(routeName);
+    let { controller, queryParamsArray } = this.cacheFor(routeName);
 
-    return queryParams.reduce((qps, data) => {
-      qps[data.key] = data.value(controller);
+    return queryParamsArray.reduce((qps, qp) => {
+      qps[qp.key] = qp.value(controller);
       return qps;
     }, {});
   },
@@ -64,11 +67,11 @@ export default Ember.Service.extend({
    * @param  {...string} params
    */
   resetParams(routeName, ...params) {
-    let { controller, queryParams } = this.cacheFor(routeName);
+    let { controller, queryParamsArray } = this.cacheFor(routeName);
 
-    let defaults = queryParams.reduce((defaults, data) => {
-      if (isEmpty(params) || params.includes(data.key)) {
-        defaults[data.key] = data.defaultValue;
+    let defaults = queryParamsArray.reduce((defaults, qp) => {
+      if (isEmpty(params) || params.includes(qp.key)) {
+        defaults[qp.key] = qp.defaultValue;
       }
       return defaults;
     }, {});
@@ -88,9 +91,10 @@ export default Ember.Service.extend({
   setDefaultValue(routeName, param, defaultValue) {
     let { controller } = this.cacheFor(routeName);
     let qpBuilder = controller.get(QP_BUILDER);
+    let queryParam = qpBuilder.queryParams[param];
 
-    assert(`[ember-parachute] The query paramater '${param}' does not exist.`, qpBuilder.options[param]);
-    qpBuilder.options[param].defaultValue = defaultValue;
+    assert(`[ember-parachute] The query paramater '${param}' does not exist.`, queryParam);
+    queryParam.defaultValue = defaultValue;
   },
 
   /**
@@ -115,10 +119,10 @@ export default Ember.Service.extend({
 
       cache[routeName] = {
         controller,
-        qpMap: qpBuilder.options,
-        queryParams: keys(qpBuilder.options).map((key) => {
-          return qpBuilder.options[key];
-        })
+        queryParams: qpBuilder.queryParams,
+        queryParamsArray: emberArray(keys(qpBuilder.queryParams).map((key) => {
+          return qpBuilder.queryParams[key];
+        }))
       }
     }
 
@@ -131,38 +135,27 @@ export default Ember.Service.extend({
    * @method _scheduleChangeEvent
    * @private
    * @param  {String} routeName
-   * @param  {Object} changed
-   * @param  {Object} removed
+   * @param  {Object} changes
+   * @param  {Object} present
    * @return
    */
-  _scheduleChangeEvent(routeName, changes) {
+  _scheduleChangeEvent(routeName, changes = {}, present = {}) {
     Ember.run.schedule('afterRender', () => {
-      let { controller, queryParams } = this.cacheFor(routeName);
+      let { controller, queryParamsArray } = this.cacheFor(routeName);
       let changedKeys = keys(changes);
 
-      /*
-        Convert the changes hash to use `key` instead of `name`
-        to keep a common convention.
-
-        ex) { key: 'sortDirection', name: 'sort_direction' }
-            We use `key` everywhere but the changes object uses `name`.
-       */
-      let changed = queryParams.reduce((changed, data) => {
-        if (changedKeys.includes(data.name)) {
-          changed[data.key] = changes[data.name];
-        }
-
-        return changed;
-      }, {});
-
-      tryInvoke(controller, 'queryParamsDidChange', [{
+      let objToPass = {
         routeName,
-        changed,
+        changed: normalizeNamedParams(changes, queryParamsArray),
+        present: normalizeNamedParams(present, queryParamsArray),
         queryParams: this.queryParamsFor(routeName),
-        shouldRefresh: queryParams.any((data) => {
-          return changedKeys.includes(data.name) && data.refresh;
+        shouldRefresh: queryParamsArray.any((qp) => {
+          return changedKeys.includes(qp.name) && qp.refresh;
         })
-      }]);
+      };
+
+      tryInvoke(controller, 'queryParamsDidChange', [ objToPass ]);
+      sendEvent(controller, 'queryParamsDidChange', [ objToPass ]);
     });
   },
 

@@ -1,3 +1,10 @@
+import Ember from 'ember';
+
+const {
+  isPresent,
+  makeArray
+} = Ember;
+
 export default {
   String(value) {
     return `${value}`;
@@ -11,11 +18,11 @@ export default {
     return Number(value);
   },
 
-  Array(value = []) {
-    return value.join(',');
+  Array(value) {
+    return makeArray(value).join(',');
   },
 
-  Object(value = {}) {
-    return value;
+  Object(value) {
+    return isPresent(value) ? value : {};
   }
 };

@@ -1,27 +1,23 @@
-# ember-parachute
+# Ember Parachute
 
-This README outlines the details of collaborating on this Ember addon.
+[![Build Status](https://travis-ci.org/offirgolan/ember-parachute.svg)](https://travis-ci.org/offirgolan/ember-parachute)
+[![npm version](https://badge.fury.io/js/ember-parachute.svg)](http://badge.fury.io/js/ember-parachute)
+
+<div style="text-align:center">
+  <img src="http://i.imgur.com/COd11eL.png" />
+</div>
 
 ## Installation
 
-* `git clone <repository-url>` this repository
-* `cd ember-parachute`
-* `npm install`
-* `bower install`
+```
+ember install ember-parachute
+```
 
-## Running
+## Helpful Links
 
-* `ember serve`
-* Visit your app at [http://localhost:4200](http://localhost:4200).
+- ### [Changelog](CHANGELOG.md)
 
-## Running Tests
+## Looking for help?
+If it is a bug [please open an issue on GitHub](http://github.com/offirgolan/ember-parachute/issues).
 
-* `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
-* `ember test`
-* `ember test --server`
-
-## Building
-
-* `ember build`
-
-For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
+## Usage
