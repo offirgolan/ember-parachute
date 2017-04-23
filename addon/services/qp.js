@@ -143,15 +143,16 @@ export default Ember.Service.extend({
   _scheduleChangeEvent(routeName, changes = {}, present = {}) {
     run.schedule('afterRender', () => {
       let { controller, queryParamsArray } = this.cacheFor(routeName);
-      let changedKeys = keys(changes);
+      let changed = normalizeNamedParams(changes, queryParamsArray);
+      let changedKeys = keys(changed);
 
       let objToPass = {
         routeName,
-        changed: normalizeNamedParams(changes, queryParamsArray),
+        changed,
         present: normalizeNamedParams(present, queryParamsArray),
         queryParams: this.queryParamsFor(routeName),
         shouldRefresh: queryParamsArray.any((qp) => {
-          return changedKeys.indexOf(qp.name) > -1 && qp.refresh;
+          return changedKeys.indexOf(qp.key) > -1 && qp.refresh;
         })
       };
 

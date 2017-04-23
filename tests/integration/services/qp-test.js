@@ -10,7 +10,7 @@ const {
 
 const QueryParams = new QueryParamsBuilder({
   direction: {
-    name: 'dir',
+    as: 'dir',
     defaultValue: 'asc',
     normalize: Transforms.String,
     refresh: true
