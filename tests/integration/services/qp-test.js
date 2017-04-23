@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import { moduleFor, test } from 'ember-qunit';
-import { buildQueryParams, Transforms } from 'ember-parachute';
+import { QueryParamsBuilder, Transforms } from 'ember-parachute';
 
 const {
   on,
@@ -8,9 +8,9 @@ const {
   assign
 } = Ember;
 
-const QueryParams = buildQueryParams({
+const QueryParams = new QueryParamsBuilder({
   direction: {
-    name: 'dir',
+    as: 'dir',
     defaultValue: 'asc',
     normalize: Transforms.String,
     refresh: true

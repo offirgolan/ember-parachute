@@ -12,9 +12,9 @@
  * @return {Object}
  */
  export default function normalizeNamedParams(o, qp) {
-   return qp.reduce((ko, data) => {
-     if (o[data.name]) {
-       ko[data.key] = o[data.name];
+   return qp.reduce((ko, p) => {
+     if (o[p.as]) {
+       ko[p.key] = o[p.as];
      }
      return ko;
    }, {});

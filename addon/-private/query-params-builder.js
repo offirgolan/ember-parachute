@@ -15,45 +15,79 @@ const {
 } = Object;
 
 export default class QueryParamsBuilder {
-  constructor(queryParams = {}) {
-    assert('[ember-parachute] You cannot pass an empty object to the query params builder.', queryParams && !isEmpty(keys(queryParams)));
+  /**
+   * @method constructor
+   * @constructor
+   * @public
+   * @param  {...Object} queryParams
+   */
+  constructor() {
+    let queryParams = assign({}, ...arguments);
+
+    assert('[ember-parachute] You cannot pass an empty object to the QueryParamsBuilder.', queryParams && !isEmpty(keys(queryParams)));
 
     this._queryParams = queryParams;
     this.queryParams = this._normalizeQueryParams(queryParams);
     this.Mixin = this._generateMixin();
   }
 
+  /**
+   * Extend this QueryParamsBuilder with the passed query paramaters
+   *
+   * @method extend
+   * @public
+   * @param  {...Object} queryParams
+   */
   extend() {
-    return new QueryParamsBuilder(assign({}, this._queryParams, ...arguments));
+    return new QueryParamsBuilder(this._queryParams, ...arguments);
   }
 
+  /**
+   * Normalize the passed queryParams object and assign each key some
+   * defaults.
+   *
+   * @method _normalizeQueryParams
+   * @private
+   * @param  {Object} queryParams
+   * @return {Object}
+   */
   _normalizeQueryParams(queryParams) {
     return keys(queryParams).reduce((o, key) => {
       let queryParam = queryParams[key];
-      let defaults = {
-        key,
-        name: key,
-        refresh: false,
-        value(controller) {
-          let value = get(controller, this.key);
-          return (typeof this.normalize === 'function') ? this.normalize(value) : value;
-        }
-      };
 
-      assert(`[ember-parachute] The query paramater ${key} must specify an object.`, queryParam && typeof queryParam === 'object');
-
-      o[key] = assign(defaults, queryParam);
+      if (queryParam && typeof queryParam === 'object') {
+        o[key] = assign({
+          key,
+          as: key,
+          refresh: false,
+          value(controller) {
+            let value = get(controller, this.key);
+            return (typeof this.normalize === 'function') ? this.normalize(value) : value;
+          }
+        }, queryParam);
+      }
 
       return o;
     }, {});
   }
 
+  /**
+   * Generate a Mixin from this instance's queryParams
+   *
+   * @method _generateMixin
+   * @private
+   * @return {Ember.Mixin}
+   */
   _generateMixin() {
     let queryParams = this.queryParams;
 
     // Create the `key` to `name` mapping used by Ember to register the QPs
     let queryParamsMap = keys(queryParams).reduce((qps, key) => {
-      qps[key] = queryParams[key].name || key;
+      qps[key] = {
+        as: queryParams[key].as,
+        scope: queryParams[key].scope
+      };
+
       return qps;
     }, {});
 
