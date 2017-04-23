@@ -84,7 +84,7 @@ export default class QueryParamsBuilder {
     // Create the `key` to `name` mapping used by Ember to register the QPs
     let queryParamsMap = keys(queryParams).reduce((qps, key) => {
       qps[key] = {
-        as: queryParams[key].as || key,
+        as: queryParams[key].as,
         scope: queryParams[key].scope
       };
 
