@@ -65,7 +65,7 @@ export default Ember.Service.extend({
    * @method resetParams
    * @public
    * @param  {String} routeName
-   * @param  {...string} params
+   * @param  {...String} params
    */
   resetParams(routeName, ...params) {
     let { controller, queryParamsArray } = this.cacheFor(routeName);
