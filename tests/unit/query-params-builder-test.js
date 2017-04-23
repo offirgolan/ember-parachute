@@ -38,15 +38,15 @@ test('QP Normalization', function(assert) {
 
   let builder = new QueryParamsBuilder({
     foo: {},
-    bar: { name: '_bar_' }
+    bar: { as: '_bar_' }
   });
 
   let { queryParams } = builder;
 
   assert.equal(queryParams.foo.key, 'foo');
-  assert.equal(queryParams.foo.name, 'foo');
+  assert.equal(queryParams.foo.as, 'foo');
   assert.equal(typeof queryParams.foo.value, 'function');
 
   assert.equal(queryParams.bar.key, 'bar');
-  assert.equal(queryParams.bar.name, '_bar_');
+  assert.equal(queryParams.bar.as, '_bar_');
 });
