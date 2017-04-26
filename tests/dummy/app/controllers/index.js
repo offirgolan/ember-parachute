@@ -3,7 +3,6 @@ import QueryParams from 'ember-parachute';
 import { task, timeout } from 'ember-concurrency';
 
 const {
-  inject,
   computed
 } = Ember;
 
@@ -26,8 +25,6 @@ const queryParams = new QueryParams({
 });
 
 export default Ember.Controller.extend(queryParams.Mixin, {
-  qp: inject.service(),
-
   queryParamsChanged: computed.or('queryParamsState.{page,search,tags}.changed'),
 
   queryParamsDidChange({ shouldRefresh, queryParams }) {
@@ -50,12 +47,12 @@ export default Ember.Controller.extend(queryParams.Mixin, {
     },
 
     resetAll() {
-      QueryParams.resetParamsFor(this);
+      this.resetQueryParams('index');
     },
 
     setDefaults() {
       ['search', 'page', 'tags'].forEach((key) => {
-        QueryParams.setDefaultValue(this, key, this.get(key));
+        this.setDefaultQueryParamValue(key, this.get(key));
       });
     }
   }
