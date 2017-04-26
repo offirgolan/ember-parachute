@@ -29,6 +29,9 @@ body {
   position: relative;
 
   &.has-parachute {
+    animation: tossing 10s ease-in-out infinite;
+    animation-direction: alternate;
+
     .box {
       margin-top: -115px;
     }
@@ -95,11 +98,32 @@ body {
   }
 }
 
+.github {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @keyframes rotating {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes tossing {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+  100% {
+    transform: rotate(-2deg);
   }
 }
