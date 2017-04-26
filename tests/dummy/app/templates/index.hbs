@@ -7,3 +7,12 @@
 <div>
   {{input value=page placeholder="Page" type="number"}}
 </div>
+<div class="">
+  <button type="button" name="button" {{action 'addFilter'}}>Add Filter</button>
+</div>
+
+<div class="">
+  {{#if queryParamsChanged}}
+    <button type="button" name="button" {{action 'resetAll'}}>Reset All</button>
+  {{/if}}
+</div>

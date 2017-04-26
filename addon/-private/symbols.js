@@ -1,2 +1,2 @@
-export const HAS_PARACHUTE = '__hasParachute__';
-export const QP_BUILDER = '__queryParamsBuilder__';
+export const HAS_PARACHUTE = '__has_parachute__';
+export const PARACHUTE_META = '__parachute_meta__';

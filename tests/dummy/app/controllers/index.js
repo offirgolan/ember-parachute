@@ -1,41 +1,58 @@
 import Ember from 'ember';
-import { QueryParamsBuilder, Transforms } from 'ember-parachute';
+import QueryParams from 'ember-parachute';
 
-const QueryParams = new QueryParamsBuilder({
+const {
+  inject,
+  computed
+} = Ember;
+
+const queryParams = new QueryParams({
   direction: {
     as: 'dir',
     defaultValue: 'asc',
-    normalize: Transforms.String,
     refresh: true
   },
   page: {
     defaultValue: 1,
-    normalize: Transforms.Number,
     refresh: true
   },
   per: {
     defaultValue: 25,
-    normalize: Transforms.Number,
     refresh: true
   },
   search: {
     defaultValue: '',
-    normalize: Transforms.String,
     refresh: true
   },
   sort: {
     defaultValue: 'name',
-    normalize: Transforms.String,
     refresh: true
   },
+  filters: {
+    defaultValue: [ 'a', 'b', 'c' ]
+  }
 });
 
-export default Ember.Controller.extend(QueryParams.Mixin, {
+export default Ember.Controller.extend(queryParams.Mixin, {
+  qp: inject.service(),
+
+  queryParamsChanged: computed.or('queryParamsState.{page,search,direction,filters}.changed'),
+
   queryParamsDidChange() {
     // console.log(...arguments);
   },
 
   onQueryParamsDidChange: Ember.on('queryParamsDidChange', function() {
     // console.log('onQueryParamsDidChange', ...arguments);
-  })
+  }),
+
+  actions: {
+    addFilter() {
+      this.get('filters').addObject('d');
+    },
+
+    resetAll() {
+      this.get('qp').resetParamsFor('index');
+    }
+  }
 });
