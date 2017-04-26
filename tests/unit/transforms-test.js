@@ -1,4 +1,4 @@
-import Transforms from 'ember-parachute/-private/transforms';
+import { Transforms } from 'ember-parachute';
 import { module, test } from 'qunit';
 
 module('Unit | Transforms');

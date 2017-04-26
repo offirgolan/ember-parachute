@@ -1,7 +1,12 @@
 import Ember from 'ember';
-import { QueryParamsBuilder, Transforms } from 'ember-parachute';
+import { QueryParams, Transforms } from 'ember-parachute';
 
-const QueryParams = new QueryParamsBuilder({
+const {
+  inject,
+  computed
+} = Ember;
+
+const queryParams = new QueryParams({
   direction: {
     as: 'dir',
     defaultValue: 'asc',
@@ -30,12 +35,22 @@ const QueryParams = new QueryParamsBuilder({
   },
 });
 
-export default Ember.Controller.extend(QueryParams.Mixin, {
+export default Ember.Controller.extend(queryParams.Mixin, {
+  qp: inject.service(),
+
+  queryParamsChanged: computed.or('queryParamsState.{page,search,direction}.changed'),
+
   queryParamsDidChange() {
     // console.log(...arguments);
   },
 
   onQueryParamsDidChange: Ember.on('queryParamsDidChange', function() {
     // console.log('onQueryParamsDidChange', ...arguments);
-  })
+  }),
+
+  actions: {
+    resetAll() {
+      this.get('qp').resetParamsFor('index');
+    }
+  }
 });

@@ -1,14 +1,13 @@
 import Ember from 'ember';
 import { moduleFor, test } from 'ember-qunit';
-import { QueryParamsBuilder, Transforms } from 'ember-parachute';
+import { QueryParams, Transforms } from 'ember-parachute';
 
 const {
   on,
   run,
-  assign
 } = Ember;
 
-const QueryParams = new QueryParamsBuilder({
+const queryParams = new QueryParams({
   direction: {
     as: 'dir',
     defaultValue: 'asc',
@@ -37,19 +36,11 @@ const QueryParams = new QueryParamsBuilder({
   },
 });
 
-const defaultValues = {
-  direction: 'asc',
-  page: 1,
-  showMenu: true,
-  search: '',
-  sort: 'name'
-}
-
-const Controller =  Ember.Controller.extend(QueryParams.Mixin);
+const Controller =  Ember.Controller.extend(queryParams.Mixin);
 let service;
 
 function getController(service, routeName) {
-  return service.cacheFor(routeName).controller;
+  return service._cacheFor(routeName).controller;
 }
 
 function setQueryParams(service, routeName, params = {}) {
@@ -68,17 +59,7 @@ moduleFor('service:qp', 'Integration | Service | qp', {
   }
 });
 
-test('assert - Controller w/ no Parachute', function(assert) {
-  assert.expect(1);
-
-  this.register('controller:index', Ember.Controller);
-
-  run(() => {
-    assert.throws(() => service.cacheFor('index'));
-  });
-});
-
-test('queryParamsDidChange get called on update', function(assert) {
+test('queryParamsDidChange gets called on update', function(assert) {
   assert.expect(1);
 
   let done = assert.async();
@@ -139,62 +120,5 @@ test('queryParamsDidChange - shouldRefresh - true', function(assert) {
 
   run(() => {
     setQueryParams(service, 'index', { page: 2, showMenu: false });
-  });
-});
-
-test('queryParamsFor', function(assert) {
-  assert.expect(2);
-
-  run(() => {
-    let changes = { page: 2, direction: 'desc' };
-
-    assert.deepEqual(service.queryParamsFor('index'), defaultValues);
-    setQueryParams(service, 'index', changes);
-    assert.deepEqual(service.queryParamsFor('index'), assign({}, defaultValues, changes));
-  });
-});
-
-test('resetParams - all', function(assert) {
-  assert.expect(2);
-
-  run(() => {
-    let changes = { page: 2, direction: 'desc' };
-
-    setQueryParams(service, 'index', changes);
-    assert.deepEqual(service.queryParamsFor('index'), assign({}, defaultValues, changes));
-
-    service.resetParams('index');
-
-    assert.deepEqual(service.queryParamsFor('index'), defaultValues);
-  });
-});
-
-test('resetParams - individual', function(assert) {
-  assert.expect(2);
-
-  run(() => {
-    let changes = { page: 2, direction: 'desc', sort: 'date' };
-
-    setQueryParams(service, 'index', changes);
-    assert.deepEqual(service.queryParamsFor('index'), assign({}, defaultValues, changes));
-
-    service.resetParams('index', 'sort', 'page');
-
-    assert.deepEqual(service.queryParamsFor('index'), assign(defaultValues, { direction: 'desc' }));
-  });
-});
-
-test('setDefaultValue', function(assert) {
-  assert.expect(2);
-
-  run(() => {
-    assert.deepEqual(service.queryParamsFor('index').page, 1);
-
-    setQueryParams(service, 'index', { page: 2 });
-
-    service.setDefaultValue('index', 'page', 2);
-    service.resetParams('index', 'page');
-
-    assert.deepEqual(service.queryParamsFor('index').page, 2);
   });
 });

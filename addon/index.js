@@ -1,4 +1,4 @@
-import QueryParamsBuilder from './-private/query-params-builder';
-import Transforms from './-private/transforms';
+import QueryParams from './query-params';
+import Transforms from './transforms';
 
-export { QueryParamsBuilder, Transforms };
+export { QueryParams, Transforms };
