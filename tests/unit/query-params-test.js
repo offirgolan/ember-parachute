@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import { QueryParams, Transforms } from 'ember-parachute';
+import QueryParams from 'ember-parachute';
 import { module, test } from 'qunit';
 
 const {
@@ -14,17 +14,14 @@ const queryParams = new QueryParams({
   direction: {
     as: 'dir',
     defaultValue: 'asc',
-    normalize: Transforms.String,
     refresh: true
   },
   page: {
     defaultValue: 1,
-    normalize: Transforms.Number,
     refresh: true
   },
   search: {
     defaultValue: '',
-    normalize: Transforms.String,
     refresh: true
   }
 });

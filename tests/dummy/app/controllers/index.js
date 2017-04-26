@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import { QueryParams, Transforms } from 'ember-parachute';
+import QueryParams from 'ember-parachute';
 
 const {
   inject,
@@ -10,35 +10,33 @@ const queryParams = new QueryParams({
   direction: {
     as: 'dir',
     defaultValue: 'asc',
-    normalize: Transforms.String,
     refresh: true
   },
   page: {
     defaultValue: 1,
-    normalize: Transforms.Number,
     refresh: true
   },
   per: {
     defaultValue: 25,
-    normalize: Transforms.Number,
     refresh: true
   },
   search: {
     defaultValue: '',
-    normalize: Transforms.String,
     refresh: true
   },
   sort: {
     defaultValue: 'name',
-    normalize: Transforms.String,
     refresh: true
   },
+  filters: {
+    defaultValue: [ 'a', 'b', 'c' ]
+  }
 });
 
 export default Ember.Controller.extend(queryParams.Mixin, {
   qp: inject.service(),
 
-  queryParamsChanged: computed.or('queryParamsState.{page,search,direction}.changed'),
+  queryParamsChanged: computed.or('queryParamsState.{page,search,direction,filters}.changed'),
 
   queryParamsDidChange() {
     // console.log(...arguments);
@@ -49,6 +47,10 @@ export default Ember.Controller.extend(queryParams.Mixin, {
   }),
 
   actions: {
+    addFilter() {
+      this.get('filters').addObject('d');
+    },
+
     resetAll() {
       this.get('qp').resetParamsFor('index');
     }

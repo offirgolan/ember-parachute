@@ -81,7 +81,7 @@ export default class QueryParams {
       state[qp.key] = {
         value,
         defaultValue: qp.defaultValue,
-        changed: value !== qp.defaultValue
+        changed: JSON.stringify(value) !== JSON.stringify(qp.defaultValue)
       };
       return state;
     }, {});
@@ -172,8 +172,7 @@ export default class QueryParams {
           as: key,
           refresh: false,
           value(controller) {
-            let value = get(controller, this.key);
-            return (typeof this.normalize === 'function') ? this.normalize(value) : value;
+            return get(controller, this.key);
           }
         }, queryParam);
       }
@@ -212,6 +211,17 @@ export default class QueryParams {
 
     // Get all the default values for each QP `key` to be set onto the controller
     let defaultValues = queryParamsArray.reduce((defaults, qp) => {
+      if (qp.alias) {
+        defaults[qp.key] = computed(qp.alias, {
+          get() {
+            return qp.deserialize(get(this, qp.alias));
+          },
+          set(key, value) {
+            set(this, qp.alias, qp.serialize(value));
+            return value;
+          }
+        })
+      }
       defaults[qp.key] = qp.defaultValue;
       return defaults;
     }, {});

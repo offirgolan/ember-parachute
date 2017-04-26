@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import { moduleFor, test } from 'ember-qunit';
-import { QueryParams, Transforms } from 'ember-parachute';
+import QueryParams from 'ember-parachute';
 
 const {
   on,
@@ -11,29 +11,24 @@ const queryParams = new QueryParams({
   direction: {
     as: 'dir',
     defaultValue: 'asc',
-    normalize: Transforms.String,
     refresh: true
   },
   page: {
     defaultValue: 1,
-    normalize: Transforms.Number,
     refresh: true
   },
   showMenu: {
     defaultValue: true,
-    normalize: Transforms.Boolean,
     refresh: false
   },
   search: {
     defaultValue: '',
-    normalize: Transforms.String,
     refresh: true
   },
   sort: {
     defaultValue: 'name',
-    normalize: Transforms.String,
     refresh: true
-  },
+  }
 });
 
 const Controller =  Ember.Controller.extend(queryParams.Mixin);
