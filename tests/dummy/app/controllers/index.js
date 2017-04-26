@@ -1,58 +1,59 @@
 import Ember from 'ember';
 import QueryParams from 'ember-parachute';
+import { task, timeout } from 'ember-concurrency';
 
 const {
-  inject,
   computed
 } = Ember;
 
 const queryParams = new QueryParams({
-  direction: {
-    as: 'dir',
-    defaultValue: 'asc',
-    refresh: true
+  parachuteOpen: {
+    as: 'parachute',
+    defaultValue: true,
   },
   page: {
     defaultValue: 1,
-    refresh: true
-  },
-  per: {
-    defaultValue: 25,
     refresh: true
   },
   search: {
     defaultValue: '',
     refresh: true
   },
-  sort: {
-    defaultValue: 'name',
-    refresh: true
-  },
-  filters: {
-    defaultValue: [ 'a', 'b', 'c' ]
+  tags: {
+    defaultValue: [ 'Ember', 'Parachute' ]
   }
 });
 
 export default Ember.Controller.extend(queryParams.Mixin, {
-  qp: inject.service(),
+  queryParamsChanged: computed.or('queryParamsState.{page,search,tags}.changed'),
 
-  queryParamsChanged: computed.or('queryParamsState.{page,search,direction,filters}.changed'),
-
-  queryParamsDidChange() {
-    // console.log(...arguments);
+  queryParamsDidChange({ shouldRefresh, queryParams }) {
+    if (shouldRefresh && queryParams.parachuteOpen) {
+      this.get('fetchModel').perform();
+    }
   },
 
-  onQueryParamsDidChange: Ember.on('queryParamsDidChange', function() {
-    // console.log('onQueryParamsDidChange', ...arguments);
-  }),
+  fetchModel: task(function *() {
+    yield timeout(1000);
+  }).restartable(),
 
   actions: {
-    addFilter() {
-      this.get('filters').addObject('d');
+    addTag(tag) {
+      this.get('tags').addObject(tag);
+    },
+
+    removeTag(tag) {
+      this.get('tags').removeObject(tag);
     },
 
     resetAll() {
-      this.get('qp').resetParamsFor('index');
+      this.resetQueryParams('index');
+    },
+
+    setDefaults() {
+      ['search', 'page', 'tags'].forEach((key) => {
+        this.setDefaultQueryParamValue(key, this.get(key));
+      });
     }
   }
 });
