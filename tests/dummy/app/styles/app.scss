@@ -1,0 +1,97 @@
+$primary: "red";
+$accent: "red";
+
+@import "ember-paper";
+@import "./sky";
+
+html,
+body,
+body > div.ember-view {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.box-container {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  flex-direction: column;
+  margin: 0;
+  position: relative;
+
+  &.has-parachute {
+    .box {
+      margin-top: -115px;
+    }
+    .parachute {
+      margin-top: -30px;
+      margin-bottom: 0;
+      width: 800px;
+    }
+  }
+
+  .box {
+    position: relative;
+    width: 500px;
+    margin-top: 0;
+    transition: all ease-out 0.75s;
+    padding: 0 10px;
+    z-index: 1;
+    box-shadow: -3px -3px 5px 0px rgba(0,0,0,0.5);
+
+    .box-content {
+      height: 350px;
+    }
+
+    .box-actions {
+      padding: 10px 0;
+    }
+
+    .loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+
+  .parachute {
+    margin-top: 0;
+    margin-bottom: -200px;
+    transition: all ease-out 0.75s;
+    width: 200px;
+    z-index: 0;
+    opacity: 0.95;
+  }
+}
+
+.troll-loader {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  > img {
+    width: 250px;
+    animation: rotating 2s linear infinite;
+  }
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
