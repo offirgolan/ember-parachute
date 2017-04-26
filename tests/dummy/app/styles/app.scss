@@ -48,8 +48,16 @@ body {
     z-index: 1;
     box-shadow: -3px -3px 5px 0px rgba(0,0,0,0.5);
 
+    .title {
+      font-family: 'Pacifico', cursive;
+      margin: 0;
+      font-weight: 400;
+      font-size: 34px;
+      color: color($color-grey, '800');
+    }
+
     .box-content {
-      height: 350px;
+      height: 300px;
     }
 
     .box-actions {

@@ -12,25 +12,12 @@ const queryParams = new QueryParams({
     as: 'parachute',
     defaultValue: true,
   },
-  direction: {
-    as: 'dir',
-    defaultValue: 'asc',
-    refresh: true
-  },
   page: {
     defaultValue: 1,
     refresh: true
   },
-  per: {
-    defaultValue: 25,
-    refresh: true
-  },
   search: {
     defaultValue: '',
-    refresh: true
-  },
-  sort: {
-    defaultValue: 'name',
     refresh: true
   },
   tags: {
@@ -63,7 +50,13 @@ export default Ember.Controller.extend(queryParams.Mixin, {
     },
 
     resetAll() {
-      this.get('qp').resetParamsFor('index');
+      QueryParams.resetParamsFor(this);
+    },
+
+    setDefaults() {
+      ['search', 'page', 'tags'].forEach((key) => {
+        QueryParams.setDefaultValue(this, key, this.get(key));
+      });
     }
   }
 });

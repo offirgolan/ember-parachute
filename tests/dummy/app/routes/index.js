@@ -4,6 +4,7 @@ import { task, timeout } from 'ember-concurrency';
 export default Ember.Route.extend({
   queryParams: {
     page: { refreshModel: true },
+    tags: { refreshModel: true },
     search: { refreshModel: true }
   },
 
