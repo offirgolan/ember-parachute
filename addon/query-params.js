@@ -49,7 +49,7 @@ export default class QueryParams {
    * Generate a `key`:`value` pair object for all the query params
    *
    * @method queryParamsFor
-   * @public
+   * @private
    * @static
    * @param  {Ember.Controller} controller
    * @return {Object}
@@ -67,7 +67,7 @@ export default class QueryParams {
    * Generate an object with the current state of each query param
    *
    * @method queryParamsStateFor
-   * @public
+   * @private
    * @static
    * @param  {Ember.Controller} controller
    * @return {Object}
@@ -91,7 +91,7 @@ export default class QueryParams {
    * Reset all or given params to their default value
    *
    * @method resetParamsFor
-   * @public
+   * @private
    * @static
    * @param  {Ember.Controller} controller
    * @param  {Array} params Array of QPs to reset. If empty, all QPs will be reset.
@@ -113,7 +113,7 @@ export default class QueryParams {
    * Set the default value for a given param
    *
    * @method setDefaultValue
-   * @public
+   * @private
    * @static
    * @param  {Ember.Controller} controller
    * @param  {String} param
@@ -151,6 +151,31 @@ export default class QueryParams {
    */
   static _hasParachute(controller) {
     return controller && get(controller, HAS_PARACHUTE);
+  }
+
+  /**
+   * Convert the a QP object to use `key` instead of `as`
+   * to keep a common convention.
+   *
+   * ex) { key: 'sortDirection', as: 'sort_direction' }
+   *     We want yo use `key` since `as` is just a sort of display value.
+   *
+   * @method _normalizeNamedParams
+   * @private
+   * @static
+   * @param  {Ember.Controller} controller
+   * @param  {Object} [params={}]
+   * @return {Object}
+   */
+  static _normalizeNamedParams(controller, params = {}) {
+    let { queryParamsArray } = this._metaFor(controller);
+
+    return queryParamsArray.reduce((ko, p) => {
+      if (params[p.as]) {
+        ko[p.key] = params[p.as];
+      }
+      return ko;
+    }, {});
   }
 
   /**
@@ -248,7 +273,15 @@ export default class QueryParams {
         return QueryParams.queryParamsStateFor(this)
       }).readOnly(),
 
-      queryParamsDidChange() {}
+      queryParamsDidChange() {},
+
+      resetQueryParams(params = []) {
+        QueryParams.resetParamsFor(this, params);
+      },
+
+      setDefaultQueryParamValue(key, defaultValue) {
+        QueryParams.setDefaultValue(this, key, defaultValue);
+      }
     });
 
     ControllerMixin[NAME_KEY] = 'Parachute';

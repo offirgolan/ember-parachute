@@ -47,7 +47,7 @@ export default Ember.Controller.extend(queryParams.Mixin, {
     },
 
     resetAll() {
-      this.resetQueryParams('index');
+      this.resetQueryParams();
     },
 
     setDefaults() {

@@ -46,7 +46,7 @@ test('asserts', function(assert) {
 
   assert.throws(() => new QueryParams());
   assert.throws(() => new QueryParams({}, {}, {}));
-  assert.throws(() => QueryParams._metaFor(Ember.Object.create()));
+  assert.throws(() => QueryParams.queryParamsFor(Ember.Object.create()));
 });
 
 test('create', function(assert) {
@@ -95,7 +95,7 @@ test('QP Normalization', function(assert) {
   assert.equal(queryParams.bar.as, '_bar_');
 });
 
-test('setDefaultValue + resetParamsFor', function(assert) {
+test('setDefaultQueryParamValue + resetQueryParams', function(assert) {
   assert.expect(4);
 
   assert.equal(controller.get('page'), 1);
@@ -103,24 +103,14 @@ test('setDefaultValue + resetParamsFor', function(assert) {
   controller.set('page', 2);
   assert.ok(controller.get('queryParamsState.page.changed'));
 
-  QueryParams.setDefaultValue(controller, 'page', 2);
+  controller.setDefaultQueryParamValue('page', 2);
   assert.notOk(controller.get('queryParamsState.page.changed'));
 
-  QueryParams.resetParamsFor(controller, ['page']);
+  controller.resetQueryParams(['page']);
   assert.equal(controller.get('page'), 2);
 });
 
-test('queryParamsFor', function(assert) {
-  assert.expect(2);
-
-  let changes = { page: 2, direction: 'desc' };
-
-  assert.deepEqual(QueryParams.queryParamsFor(controller), defaultValues);
-  controller.setProperties(changes);
-  assert.deepEqual(QueryParams.queryParamsFor(controller), assign({}, defaultValues, changes));
-});
-
-test('resetParamsFor - all', function(assert) {
+test('resetQueryParams - all', function(assert) {
   assert.expect(2);
 
   let changes = { page: 2, direction: 'desc' };
@@ -128,11 +118,11 @@ test('resetParamsFor - all', function(assert) {
   controller.setProperties(changes);
   assert.deepEqual(controller.get('allQueryParams'), assign({}, defaultValues, changes));
 
-  QueryParams.resetParamsFor(controller);
+  controller.resetQueryParams();
   assert.deepEqual(controller.get('allQueryParams'), defaultValues);
 });
 
-test('resetParamsFor - individual', function(assert) {
+test('resetQueryParams - individual', function(assert) {
   assert.expect(2);
 
   let changes = { page: 2, direction: 'desc', search: 'date' };
@@ -140,7 +130,7 @@ test('resetParamsFor - individual', function(assert) {
   controller.setProperties(changes);
   assert.deepEqual(controller.get('allQueryParams'), assign({}, defaultValues, changes));
 
-  QueryParams.resetParamsFor(controller, ['search', 'page']);
+  controller.resetQueryParams(['search', 'page']);
   assert.deepEqual(controller.get('allQueryParams'), assign(defaultValues, { direction: 'desc' }));
 });
 
@@ -179,7 +169,7 @@ test('CP - queryParamsState', function(assert) {
     changed: true
   });
 
-  QueryParams.setDefaultValue(controller, 'page', 2);
+  controller.setDefaultQueryParamValue('page', 2);
 
   assert.deepEqual(controller.get('queryParamsState.page'), {
     value: 2,
