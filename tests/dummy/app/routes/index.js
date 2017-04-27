@@ -16,5 +16,11 @@ export default Ember.Route.extend({
     if (!params.parachuteOpen) {
       return this.get('fetchModel').perform();
     }
+  },
+
+  setupController(controller) {
+    if (controller.get('parachuteOpen')) {
+      controller.get('fetchModel').perform();
+    }
   }
 });

@@ -18,6 +18,10 @@ body {
   box-sizing: border-box;
 }
 
+.text-primary {
+  color: color($primary, '500');
+}
+
 .box-container {
   display: flex;
   justify-content: center;
@@ -33,18 +37,18 @@ body {
     animation-direction: alternate;
 
     .box {
-      margin-top: -115px;
+      margin-top: -100px;
     }
     .parachute {
       margin-top: -30px;
       margin-bottom: 0;
-      width: 800px;
+      width: 700px;
     }
   }
 
   .box {
     position: relative;
-    width: 500px;
+    width: 450px;
     margin-top: 0;
     transition: all ease-out 0.75s;
     padding: 0 10px;
@@ -60,7 +64,7 @@ body {
     }
 
     .box-content {
-      height: 300px;
+      height: 270px;
     }
 
     .box-actions {
@@ -105,6 +109,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+},
+
+.help {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+  background-color: color($color-blue-grey, '500') !important;
+  color: white;
+}
+
+.help-dialog-header {
+  background-color: color($color-blue-grey, '500');
 }
 
 @keyframes rotating {

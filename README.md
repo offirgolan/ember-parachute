@@ -24,8 +24,8 @@ ember install ember-parachute
 
 ## Helpful Links
 
+- ### [Live Demo][demo]
 - ### [Changelog][changelog]
-- ### [Demo][demo]
 
 ## Looking for help?
 If it is a bug [please open an issue on GitHub](http://github.com/offirgolan/ember-parachute/issues).

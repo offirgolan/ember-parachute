@@ -4,6 +4,44 @@
 
 {{outlet}}
 
+{{#paper-button raised=true fab=true primary=true onClick=(action (action (mut showHelpDialog) true)) class="help"}}
+  {{paper-icon icon="help" size=36}}
+{{/paper-button}}
+
 {{#paper-button raised=true fab=true primary=true href="https://github.com/offirgolan/ember-parachute" target="_blank" class="github"}}
   <img src="images/github.png" alt="" ondragstart="return false;">
 {{/paper-button}}
+
+{{#if showHelpDialog}}
+  {{#paper-dialog class="flex-50" onClose=(action (action (mut showHelpDialog) false)) openFrom=".help" closeTo=".help" clickOutsideToClose=true}}
+    {{#paper-toolbar}}
+      {{#paper-toolbar-tools class="help-dialog-header"}}
+        <h2>Help</h2>
+        <span class="flex"></span>
+        {{#paper-button iconButton=true onClick=(action (action (mut showHelpDialog) false))}}{{paper-icon icon="close"}}{{/paper-button}}
+      {{/paper-toolbar-tools}}
+    {{/paper-toolbar}}
+
+    {{#paper-dialog-content}}
+      <h3>Parachute: <strong class="text-primary">Open</strong></h3>
+      <p>
+        With the <i>queryParamsDidChange</i> hook that Ember Parachute provides, we are easily able to do
+        all of our data fetching and loading state handling from our route's controller.
+      </p>
+
+      <span class="flex"></span>
+
+      <h3>Parachute: <strong class="text-primary">Closed</strong></h3>
+      <p>
+        Without Ember Parachute, we are forced to use the default model hooks provided by Ember's route.
+        If we return a promise from the <i>beforeModel</i>, <i>model</i>, or <i>afterModel</i> hook, Ember transitions the route into a
+        loading sub-route which forces all rendered elements to be unrendered, render the loading state, then
+        rerender our route.
+      </p>
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      {{#paper-button onClick=(action (action (mut showHelpDialog) false))}}Got It!{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
