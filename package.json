@@ -1,17 +1,24 @@
 {
   "name": "ember-parachute",
   "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Improves the experience of working with query params in Ember",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "query params",
+    "parachute"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "Offir Golan <offirgolan@gmail.com>",
+  "contributors": [
+    "Lauren Tan <arr@sugarpirate.com>"
+  ],
   "directories": {
     "doc": "doc",
     "test": "tests"
   },
-  "repository": "",
+  "repository": "https://github.com/offirgolan/ember-parachute",
+  "bugs": "https://github.com/offirgolan/ember-parachute/issues",
+  "homepage": "https://github.com/offirgolan/ember-parachute",
   "scripts": {
     "build": "ember build",
     "start": "ember server",
@@ -55,6 +62,7 @@
     "node": ">= 4"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config"
+    "configPath": "tests/dummy/config",
+    "demoURL": "http://offirgolan.github.io/ember-parachute"
   }
 }
