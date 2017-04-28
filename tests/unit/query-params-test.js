@@ -42,10 +42,11 @@ module('Unit | QueryParams', {
 });
 
 test('asserts', function(assert) {
-  assert.expect(3);
+  assert.expect(4);
 
   assert.throws(() => new QueryParams());
   assert.throws(() => new QueryParams({}, {}, {}));
+  assert.throws(() => new QueryParams({ foo: {} }));
   assert.throws(() => QueryParams.queryParamsFor(Ember.Object.create()));
 });
 
@@ -54,24 +55,24 @@ test('create', function(assert) {
 
   let QP, controller, queryParams;
 
-  QP = new QueryParams({ foo: {} }, { bar: {} }, { baz: 1 });
+  QP = new QueryParams({ foo: { defaultValue: 1 } }, { bar: { defaultValue: 1 } }, { baz: { defaultValue: 1 } });
+  controller = Ember.Object.extend(QP.Mixin).create();
+  queryParams = QueryParams._metaFor(controller).queryParams;
+
+  assert.deepEqual(keys(queryParams), ['foo', 'bar', 'baz']);
+
+  QP = new QueryParams({ foo: { defaultValue: 1 } }, { bar: { defaultValue: 1 } }, { bar: { defaultValue: undefined } });
   controller = Ember.Object.extend(QP.Mixin).create();
   queryParams = QueryParams._metaFor(controller).queryParams;
 
   assert.deepEqual(keys(queryParams), ['foo', 'bar']);
-
-  QP = new QueryParams({ foo: {} }, { bar: {} }, { bar: undefined });
-  controller = Ember.Object.extend(QP.Mixin).create();
-  queryParams = QueryParams._metaFor(controller).queryParams;
-
-  assert.deepEqual(keys(queryParams), ['foo']);
 });
 
 test('extend', function(assert) {
   assert.expect(1);
 
-  let QP = new QueryParams({ foo: {} });
-  QP = QP.extend({ bar: {} }, { baz: {} });
+  let QP = new QueryParams({ foo: { defaultValue: 1 } });
+  QP = QP.extend({ bar: { defaultValue: 1 } }, { baz: { defaultValue: 1 } });
 
   assert.deepEqual(keys(QP.queryParams), ['foo', 'bar', 'baz']);
 });
@@ -80,8 +81,8 @@ test('QP Normalization', function(assert) {
   assert.expect(5);
 
   let QP = new QueryParams({
-    foo: {},
-    bar: { as: '_bar_' }
+    foo: { defaultValue: 1 },
+    bar: { defaultValue: 1, as: '_bar_' }
   });
 
   controller = Ember.Object.extend(QP.Mixin).create();

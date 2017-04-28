@@ -29,6 +29,7 @@ export default class QueryParams {
     let queryParams = assign({}, ...arguments);
 
     assert('[ember-parachute] You cannot pass an empty object to the QueryParams.', queryParams && !isEmpty(keys(queryParams)));
+    assert('[ember-parachute] You must specify all required keys in your QueryParams map', this._validateQueryParams(queryParams));
 
     this.queryParams = queryParams;
     this.Mixin = this._generateMixin();
@@ -204,6 +205,21 @@ export default class QueryParams {
 
       return o;
     }, {});
+  }
+
+  /**
+   * Validates the query param map.
+   *
+   * @method _validateQueryParams
+   * @private
+   * @param {Object} queryParams
+   * @return {Boolean}
+   */
+  _validateQueryParams(queryParams) {
+    return keys(queryParams).reduce((acc, key) => {
+      let queryParam = queryParams[key];
+      return acc && emberArray(keys(queryParam)).includes('defaultValue');
+    }, true);
   }
 
   /**

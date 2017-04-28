@@ -113,7 +113,7 @@ Each query param is defined as follows (using TypeScript notation for documentin
 ```ts
 interface QueryParamOption {
   as?: string;
-  defaultValue?: any;
+  defaultValue: any; // required
   refresh?: boolean;
   scope?: 'controller';
 }
@@ -136,7 +136,7 @@ The `as` option lets you optionally override the query param URL key for a query
 
 ### `defaultValue`
 
-The `defaultValue` option specifies the default value for the query param. When a query param is set to its default value, it will not appear in the URL.
+**Required.** The `defaultValue` option specifies the default value for the query param. When a query param is set to its default value, it will not appear in the URL.
 
 ### `refresh`
 
