@@ -146,6 +146,42 @@ When `refresh` is `true`, the `queryParamsDidChange` hook provided by the mixin 
 
 `scope` can only be one value if specified: `controller`. This is equivalent to the `scope` option in regular Ember query params. You can read more about it in the bottom paragraph [here][ember-qp-docs].
 
+### Extending
+
+The Query Param Map not only accepts multiple arguments, but it can also be extended.
+
+```js
+import QueryParams from 'ember-parachute';
+
+const SortParams = {
+  sortName: {
+    defaultValue: 'name',
+    refresh: true
+  },
+  sortDirection: {
+    defaultValue: 'asc',
+    refresh: true
+  }
+};
+
+const SearchParams = {
+  query: {
+    defaultValue: '',
+    refresh: true
+  }
+}
+
+const myQueryParams = new QueryParams(SortParams, SearchParams /*, ... */);
+
+myQueryParams.extend({
+  sidebarOpen: {
+    defaultValue: true
+  }
+} /*, ... */);
+```
+
+With the above code, the `myQueryParams` map will generate Query Params for `sortName`, `sortDirection`, `query`, and `sidebarOpen`.
+
 ## Controller Mixin
 
 After creating a query params map, you can generate a controller mixin with the `Mixin` property on the query params map:
