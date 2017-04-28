@@ -173,14 +173,14 @@ const SearchParams = {
 
 const myQueryParams = new QueryParams(SortParams, SearchParams /*, ... */);
 
-myQueryParams.extend({
+const myExtendedQueryParams = myQueryParams.extend({
   sidebarOpen: {
     defaultValue: true
   }
 } /*, ... */);
 ```
 
-With the above code, the `myQueryParams` map will generate Query Params for `sortName`, `sortDirection`, `query`, and `sidebarOpen`.
+With the above code, the `myExtendedQueryParams` map will generate Query Params for `sortName`, `sortDirection`, `query`, and `sidebarOpen`.
 
 ## Controller Mixin
 
