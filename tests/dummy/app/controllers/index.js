@@ -3,7 +3,8 @@ import QueryParams from 'ember-parachute';
 import { task, timeout } from 'ember-concurrency';
 
 const {
-  computed
+  computed,
+  A: emberArray
 } = Ember;
 
 const queryParams = new QueryParams({
@@ -20,7 +21,13 @@ const queryParams = new QueryParams({
     refresh: true
   },
   tags: {
-    defaultValue: [ 'Ember', 'Parachute' ]
+    defaultValue: ['Ember', 'Parachute'],
+    serialize(value) {
+      return value.toString();
+    },
+    deserialize(value = '') {
+      return emberArray(value.split(','));
+    }
   }
 });
 

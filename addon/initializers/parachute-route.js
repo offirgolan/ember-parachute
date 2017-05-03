@@ -1,36 +1,101 @@
 import Ember from 'ember';
 import QueryParams from '../query-params';
+import lookupController from '../utils/lookup-controller';
 
 const {
+  get,
   run,
   assign,
   tryInvoke,
   sendEvent,
   A: emberArray
 } = Ember;
-
-const {
-  keys
-} = Object;
+const { keys } = Object;
 
 export function initialize(/* application */) {
   Ember.Route.reopen({
     actions: {
+      /**
+       * Route hook that fires when query params are changed.
+       *
+       * @public
+       * @param {object} [changed={}]
+       * @param {object} [present={}]
+       * @param {object} [removed={}]
+       * @returns {any}
+       */
       queryParamsDidChange(changed = {}, present = {}, removed = {}) {
-        if (QueryParams._hasParachute(this.controller)) {
+        if (QueryParams.hasParachute(this.controller)) {
           this._scheduleParachuteChangeEvent(this.routeName, this.controller, assign({}, changed, removed));
         }
-
         return this._super(...arguments);
       }
     },
 
-    _scheduleParachuteChangeEvent(routeName, controller, changed = {}) {
-      run.schedule('afterRender', () => {
-        let { queryParams } = QueryParams._metaFor(controller);
-        let state = QueryParams.queryParamsStateFor(controller);
-        changed = QueryParams._normalizeNamedParams(controller, changed);
+    /**
+     * Serialize query param value if a given query param has a `serialize`
+     * method.
+     *
+     * @private
+     * @param {any} value
+     * @param {string} urlKey
+     * @returns {any}
+     */
+    serializeQueryParam(value, urlKey/**, defaultValueType **/) {
+      let controller = lookupController(this);
+      if (QueryParams.hasParachute(controller)) {
+        let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
+        if (typeof queryParam.serialize === 'function') {
+          return queryParam.serialize(value);
+        }
+      }
+      return this._super(...arguments);
+    },
 
+    /**
+     * Deserialize query param value if a given query param has a `deserialize`
+     * method.
+     *
+     * @private
+     * @param {any} value
+     * @param {string} urlKey
+     * @returns {any}
+     */
+    deserializeQueryParam(value, urlKey/**, defaultValueType **/) {
+      let controller = lookupController(this);
+      if (QueryParams.hasParachute(controller)) {
+        let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
+        if (typeof queryParam.deserialize === 'function') {
+          return queryParam.deserialize(value);
+        }
+      }
+      return this._super(...arguments);
+    },
+
+    /**
+     * Schedule a QueryParamChangeEvent when query params change.
+     *
+     * @private
+     * @param {string} routeName
+     * @param {Ember.Controller} controller
+     * @param {object} [changed={}]
+     * @returns {Void}
+     */
+    _scheduleParachuteChangeEvent(routeName, controller, changed = {}) {
+      run.schedule('afterRender', this, () => {
+        let queryParams = get(QueryParams.metaFor(controller), 'queryParams');
+        let state = QueryParams.stateFor(controller);
+        changed = QueryParams.normalizeNamedParams(controller, changed);
+
+        /**
+         * @typedef {Object} QueryParamsChangeEvent
+         * @property {string} routeName
+         * @property {object} changed
+         * @property {object} queryParams
+         * @property {boolean} shouldRefresh
+         * @property {object} changes
+         */
+        /** @type {QueryParamsChangeEvent} */
         let objToPass = {
           routeName,
 
@@ -52,8 +117,8 @@ export function initialize(/* application */) {
           }, {})
         };
 
-        tryInvoke(controller, 'queryParamsDidChange', [ objToPass ]);
-        sendEvent(controller, 'queryParamsDidChange', [ objToPass ]);
+        tryInvoke(controller, 'queryParamsDidChange', [objToPass]);
+        sendEvent(controller, 'queryParamsDidChange', [objToPass]);
       });
     }
   });

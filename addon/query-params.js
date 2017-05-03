@@ -1,5 +1,8 @@
 import Ember from 'ember';
-import { HAS_PARACHUTE,  PARACHUTE_META } from './-private/symbols';
+import { HAS_PARACHUTE, PARACHUTE_META } from './-private/symbols';
+import ParachuteMetaFor from './-private/meta';
+import queryParamsStateFor from './-private/state';
+import includes from './utils/includes';
 
 const {
   get,
@@ -13,24 +16,25 @@ const {
   A: emberArray,
   NAME_KEY
 } = Ember;
+const { keys } = Object;
 
-const {
-  keys
-} = Object;
-
+/**
+ * Query Params class.
+ *
+ * @export
+ * @class QueryParams
+ */
 export default class QueryParams {
   /**
    * @method constructor
    * @constructor
    * @public
-   * @param  {...Object} queryParams
+   * @returns {QueryParams}
    */
   constructor() {
     let queryParams = assign({}, ...arguments);
-
     assert('[ember-parachute] You cannot pass an empty object to the QueryParams.', queryParams && !isEmpty(keys(queryParams)));
     assert('[ember-parachute] You must specify all required keys in your QueryParams map', this._validateQueryParams(queryParams));
-
     this.queryParams = queryParams;
     this.Mixin = this._generateMixin();
   }
@@ -40,24 +44,89 @@ export default class QueryParams {
    *
    * @method extend
    * @public
-   * @param  {...Object} queryParams
+   * @returns {QueryParams}
    */
   extend() {
     return new QueryParams(this.queryParams, ...arguments);
   }
 
   /**
+   * Get the meta object for the given controller
+   *
+   * @method metaFor
+   * @public
+   * @static
+   * @param  {Ember.Controller} controller
+   * @returns {Ember.Object}
+   */
+  static metaFor(controller) {
+    assert(`[ember-parachute] The controller '${controller}' is not set up with ember-parachute.`, this.hasParachute(controller));
+    return get(controller, PARACHUTE_META);
+  }
+
+  /**
+   * Check if the given controller has ember-parachute mixed in.
+   *
+   * @method _hasParachute
+   * @public
+   * @static
+   * @param  {Ember.Controller} controller
+   * @returns {boolean}
+   */
+  static hasParachute(controller) {
+    return controller && get(controller, HAS_PARACHUTE);
+  }
+
+  /**
+   * Convert the a QP object to use `key` instead of `as`
+   * to keep a common convention.
+   *
+   * ex) { key: 'sortDirection', as: 'sort_direction' }
+   *     We want to use `key` since `as` is just a sort of display value.
+   *
+   * @method normalizeNamedParams
+   * @public
+   * @static
+   * @param  {Ember.Controller} controller
+   * @param  {object} [params={}]
+   * @returns {object}
+   */
+  static normalizeNamedParams(controller, params = {}) {
+    let queryParamsArray = get(this.metaFor(controller), 'queryParamsArray');
+    return queryParamsArray.reduce((ko, p) => {
+      ko[p.key] = params[p.as];
+      return ko;
+    }, {});
+  }
+
+  /**
+   * Returns a query param based on a urlKey.
+   *
+   * @method lookupQueryParam
+   * @public
+   * @static
+   * @param {Ember.Controller} controller
+   * @param {string} urlKey
+   * @returns {Object}
+   *
+   * @memberof QueryParams
+   */
+  static lookupQueryParam(controller, urlKey) {
+    let queryParamsArray = get(this.metaFor(controller), 'queryParamsArray');
+    return queryParamsArray.findBy('as', urlKey);
+  }
+
+  /**
    * Generate a `key`:`value` pair object for all the query params
    *
    * @method queryParamsFor
-   * @private
+   * @public
    * @static
    * @param  {Ember.Controller} controller
-   * @return {Object}
+   * @returns {object}
    */
   static queryParamsFor(controller) {
-    let { queryParamsArray } = this._metaFor(controller);
-
+    let queryParamsArray = get(this.metaFor(controller), 'queryParamsArray');
     return queryParamsArray.reduce((qps, qp) => {
       qps[qp.key] = qp.value(controller);
       return qps;
@@ -67,116 +136,51 @@ export default class QueryParams {
   /**
    * Generate an object with the current state of each query param
    *
-   * @method queryParamsStateFor
-   * @private
+   * @method stateFor
+   * @public
    * @static
    * @param  {Ember.Controller} controller
-   * @return {Object}
+   * @returns {object}
    */
-  static queryParamsStateFor(controller) {
-    let { queryParamsArray } = this._metaFor(controller);
-
-    return queryParamsArray.reduce((state, qp) => {
-      let value = qp.value(controller);
-
-      state[qp.key] = {
-        value,
-        defaultValue: qp.defaultValue,
-        changed: JSON.stringify(value) !== JSON.stringify(qp.defaultValue)
-      };
-      return state;
-    }, {});
+  static stateFor(controller) {
+    return queryParamsStateFor(controller);
   }
 
   /**
    * Reset all or given params to their default value
    *
    * @method resetParamsFor
-   * @private
+   * @public
    * @static
    * @param  {Ember.Controller} controller
-   * @param  {Array} params Array of QPs to reset. If empty, all QPs will be reset.
+   * @param  {string[]} params Array of QPs to reset. If empty, all QPs will be reset.
    */
   static resetParamsFor(controller, params = []) {
-    let { queryParamsArray } = this._metaFor(controller);
-
+    let queryParamsArray = get(this.metaFor(controller), 'queryParamsArray');
     let defaults = queryParamsArray.reduce((defaults, qp) => {
       if (isEmpty(params) || params.indexOf(qp.key) > -1) {
         defaults[qp.key] = qp.defaultValue;
       }
       return defaults;
     }, {});
-
     setProperties(controller, defaults);
   }
 
   /**
-   * Set the default value for a given param
+   * Set the default value for a given param.
    *
    * @method setDefaultValue
-   * @private
+   * @public
    * @static
    * @param  {Ember.Controller} controller
-   * @param  {String} param
-   * @param  {*} defaultValue
+   * @param  {string} param
+   * @param  {any} defaultValue
+   * @returns {void}
    */
   static setDefaultValue(controller, param, defaultValue) {
-    let { queryParams } = this._metaFor(controller);
-
-    assert(`[ember-parachute] The query paramater '${param}' does not exist.`, queryParams[param]);
+    let queryParams = get(this.metaFor(controller), 'queryParams');
+    assert(`[ember-parachute] The query parameter '${param}' does not exist.`, queryParams[param]);
     set(queryParams[param], 'defaultValue', defaultValue);
-  }
-
-  /**
-   * Get the meta object for the given controller
-   *
-   * @method _metaFor
-   * @private
-   * @static
-   * @param  {Ember.Controller} controller
-   * @return {Object}
-   */
-  static _metaFor(controller) {
-    assert(`[ember-parachute] The controller '${controller}' is not set up with ember-parachute.`, this._hasParachute(controller));
-    return get(controller, PARACHUTE_META);
-  }
-
-  /**
-   * Check if the given controller has ember-parachute mixed in.
-   *
-   * @method _hasParachute
-   * @private
-   * @static
-   * @param  {Ember.Controller} controller
-   * @return {Boolean}
-   */
-  static _hasParachute(controller) {
-    return controller && get(controller, HAS_PARACHUTE);
-  }
-
-  /**
-   * Convert the a QP object to use `key` instead of `as`
-   * to keep a common convention.
-   *
-   * ex) { key: 'sortDirection', as: 'sort_direction' }
-   *     We want yo use `key` since `as` is just a sort of display value.
-   *
-   * @method _normalizeNamedParams
-   * @private
-   * @static
-   * @param  {Ember.Controller} controller
-   * @param  {Object} [params={}]
-   * @return {Object}
-   */
-  static _normalizeNamedParams(controller, params = {}) {
-    let { queryParamsArray } = this._metaFor(controller);
-
-    return queryParamsArray.reduce((ko, p) => {
-      if (params[p.as]) {
-        ko[p.key] = params[p.as];
-      }
-      return ko;
-    }, {});
   }
 
   /**
@@ -185,13 +189,12 @@ export default class QueryParams {
    *
    * @method _normalizeQueryParams
    * @private
-   * @param  {Object} queryParams
-   * @return {Object}
+   * @param  {object} queryParams
+   * @returns {object}
    */
   _normalizeQueryParams(queryParams) {
     return keys(queryParams).reduce((o, key) => {
       let queryParam = queryParams[key];
-
       if (queryParam && typeof queryParam === 'object') {
         o[key] = assign({
           key,
@@ -202,7 +205,6 @@ export default class QueryParams {
           }
         }, queryParam);
       }
-
       return o;
     }, {});
   }
@@ -212,13 +214,14 @@ export default class QueryParams {
    *
    * @method _validateQueryParams
    * @private
-   * @param {Object} queryParams
-   * @return {Boolean}
+   * @param {object} queryParams
+   * @returns {boolean}
    */
   _validateQueryParams(queryParams) {
     return keys(queryParams).reduce((acc, key) => {
       let queryParam = queryParams[key];
-      return acc && emberArray(keys(queryParam)).includes('defaultValue');
+      let queryParamKeys = emberArray(keys(queryParam));
+      return acc && includes(queryParamKeys, 'defaultValue');
     }, true);
   }
 
@@ -227,17 +230,11 @@ export default class QueryParams {
    *
    * @method generateMeta
    * @private
-   * @return {Object}
+   * @returns {Ember.Object}
    */
   _generateMeta() {
     let queryParams = this._normalizeQueryParams(this.queryParams);
-
-    return {
-      queryParams,
-      queryParamsArray: emberArray(keys(queryParams).map((key) => {
-        return queryParams[key];
-      }))
-    }
+    return ParachuteMetaFor(queryParams);
   }
 
   /**
@@ -245,25 +242,25 @@ export default class QueryParams {
    *
    * @method _generateMixin
    * @private
-   * @return {Ember.Mixin}
+   * @returns {Ember.Mixin}
    */
   _generateMixin() {
-    let { queryParams, queryParamsArray } = this._generateMeta();
+    let meta = this._generateMeta();
+    /**
+     * @typedef {Object} QueryParams
+     * @property {string} key
+     * @property {string} as
+     * @property {"controller" | undefined} scope
+     * @property {any} defaultValue
+     */
+    /** @type {QueryParams} */
+    let queryParams = get(meta, 'queryParams');
+    /** @type {QueryParams[]} */
+    let queryParamsArray = get(meta, 'queryParamsArray');
 
     // Get all the default values for each QP `key` to be set onto the controller
-    let defaultValues = queryParamsArray.reduce((defaults, qp) => {
-      if (qp.alias) {
-        defaults[qp.key] = computed(qp.alias, {
-          get() {
-            return qp.deserialize(get(this, qp.alias));
-          },
-          set(key, value) {
-            set(this, qp.alias, qp.serialize(value));
-            return value;
-          }
-        })
-      }
-      defaults[qp.key] = qp.defaultValue;
+    let defaultValues = queryParamsArray.reduce((defaults, { key, defaultValue }) => {
+      defaults[key] = defaultValue;
       return defaults;
     }, {});
 
@@ -274,8 +271,8 @@ export default class QueryParams {
       [PARACHUTE_META]: computed(() => this._generateMeta()).readOnly(),
 
       // Create the `key` to `name` mapping used by Ember to register the QPs
-      queryParams: queryParamsArray.reduce((qps, qp) => {
-        qps[qp.key] = { as: qp.as, scope: qp.scope };
+      queryParams: queryParamsArray.reduce((qps, { key, as, scope }) => {
+        qps[key] = { as, scope };
         return qps;
       }, {}),
 
@@ -286,7 +283,7 @@ export default class QueryParams {
 
       // Create a CP that holds the state of each QP
       queryParamsState: computed(...keys(queryParams), `${PARACHUTE_META}.queryParamsArray.@each.defaultValue`, function() {
-        return QueryParams.queryParamsStateFor(this)
+        return QueryParams.stateFor(this);
       }).readOnly(),
 
       queryParamsDidChange() {},
