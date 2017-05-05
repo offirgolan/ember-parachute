@@ -2,6 +2,21 @@
 # yarn lockfile v1
 
 
+"@types/ember@^2.7.40":
+  version "2.7.40"
+  resolved "https://registry.yarnpkg.com/@types/ember/-/ember-2.7.40.tgz#237488b48e762b54224bb1a8fe84f1907c90931c"
+  dependencies:
+    "@types/handlebars" "*"
+    "@types/jquery" "*"
+
+"@types/handlebars@*":
+  version "4.0.32"
+  resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.32.tgz#637e8d945a9354aab47df7125005490fe9f8e592"
+
+"@types/jquery@*":
+  version "2.0.42"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.42.tgz#57cdb1a0f610ddad488adf620e40f8d07ff3ecdf"
+
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
@@ -6465,6 +6480,10 @@ type-is@~1.6.14:
 typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
+
+typescript@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.2.tgz#f0f045e196f69a72f06b25fd3bd39d01c3ce9984"
 
 uc.micro@^1.0.0, uc.micro@^1.0.1, uc.micro@^1.0.3:
   version "1.0.3"
