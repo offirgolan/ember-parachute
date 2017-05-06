@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import { HAS_PARACHUTE, PARACHUTE_META } from './-private/symbols';
-import ParachuteMeta from './-private/meta';
+import ParachuteMeta from './-private/parachute-meta';
 import queryParamsStateFor from './-private/state';
 
 const {
