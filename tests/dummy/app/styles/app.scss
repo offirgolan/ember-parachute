@@ -19,6 +19,10 @@ body {
   box-sizing: border-box;
 }
 
+#qunit {
+  overflow: auto;
+}
+
 .text-primary {
   color: color($primary, '500');
 }

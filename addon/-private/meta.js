@@ -1,40 +1,23 @@
 import Ember from 'ember';
+import QueryParam from './query-param';
 
 const {
-  get,
-  computed,
-  A: emberArray,
-  Object: EmberObject
+  A: emberArray
 } = Ember;
-const { keys } = Object;
 
-/**
- * Returns list of dependent keys for a given query params object.
- *
- * @param {object} queryParams
- * @returns {string[]}
- */
-function dependentKeysFor(queryParams) {
-  return keys(queryParams).map((qpKey) => {
-    return `queryParams.${qpKey}.{defaultValue,defaultValue.[]}`;
-  });
-}
+const {
+  keys
+} = Object;
 
-/**
- * Creates parachute meta object based on query params.
- *
- * @private
- * @param {Object} queryParams
- * @returns {Ember.Object}
- */
-export default function ParachuteMetaFor(queryParams) {
-  return EmberObject.extend({
-    queryParams,
-    queryParamsArray: computed(...dependentKeysFor(queryParams), function() {
-      let queryParams = get(this, 'queryParams');
-      return emberArray(keys(queryParams).map((key) => {
-        return queryParams[key];
-      }));
-    }).readOnly()
-  }).create();
+export default class ParachuteMeta {
+  constructor(queryParams = {}) {
+    this.queryParams = keys(queryParams).reduce((qps, key) => {
+      qps[key] = new QueryParam(key, queryParams[key]);
+      return qps;
+    }, {});
+
+    this.queryParamsArray = emberArray(keys(this.queryParams).map((key) => {
+      return this.queryParams[key];
+    }));
+  }
 }

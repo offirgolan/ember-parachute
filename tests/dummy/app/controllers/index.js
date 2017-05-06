@@ -11,6 +11,12 @@ const queryParams = new QueryParams({
   parachuteOpen: {
     as: 'parachute',
     defaultValue: true,
+    serialize(value) {
+      return value ? 'open' : 'closed';
+    },
+    deserialize(value) {
+      return value === 'open' ? true : false;
+    }
   },
   page: {
     defaultValue: 1,
@@ -22,6 +28,7 @@ const queryParams = new QueryParams({
   },
   tags: {
     defaultValue: ['Ember', 'Parachute'],
+    refresh: true,
     serialize(value) {
       return value.toString();
     },
@@ -59,7 +66,8 @@ export default Ember.Controller.extend(queryParams.Mixin, {
 
     setDefaults() {
       ['search', 'page', 'tags'].forEach((key) => {
-        this.setDefaultQueryParamValue(key, this.get(key));
+        let value = (key === 'tags') ? this.get(key).concat() : this.get(key);
+        this.setDefaultQueryParamValue(key, value);
       });
     }
   }
