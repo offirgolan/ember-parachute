@@ -1,16 +1,15 @@
 import Ember from 'ember';
 import QueryParams from '../query-params';
+import QueryParamsChangeEvent from '../-private/query-param-change-event';
 import lookupController from '../utils/lookup-controller';
 
 const {
-  get,
   run,
   assign,
+  canInvoke,
   tryInvoke,
-  sendEvent,
-  A: emberArray
+  sendEvent
 } = Ember;
-const { keys } = Object;
 
 export function initialize(/* application */) {
   Ember.Route.reopen({
@@ -25,9 +24,12 @@ export function initialize(/* application */) {
        * @returns {any}
        */
       queryParamsDidChange(changed = {}, present = {}, removed = {}) {
-        if (QueryParams.hasParachute(this.controller)) {
-          this._scheduleParachuteChangeEvent(this.routeName, this.controller, assign({}, changed, removed));
+        let { controller, routeName } = this;
+
+        if (QueryParams.hasParachute(controller)) {
+          this._scheduleParachuteChangeEvent(routeName, controller, assign({}, changed, removed));
         }
+
         return this._super(...arguments);
       }
     },
@@ -43,12 +45,15 @@ export function initialize(/* application */) {
      */
     serializeQueryParam(value, urlKey/**, defaultValueType **/) {
       let controller = lookupController(this);
+
       if (QueryParams.hasParachute(controller)) {
         let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
-        if (typeof queryParam.serialize === 'function') {
+
+        if (canInvoke(queryParam, 'serialize')) {
           return queryParam.serialize(value);
         }
       }
+
       return this._super(...arguments);
     },
 
@@ -63,12 +68,15 @@ export function initialize(/* application */) {
      */
     deserializeQueryParam(value, urlKey/**, defaultValueType **/) {
       let controller = lookupController(this);
+
       if (QueryParams.hasParachute(controller)) {
         let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
-        if (typeof queryParam.deserialize === 'function') {
+
+        if (canInvoke(queryParam, 'deserialize')) {
           return queryParam.deserialize(value);
         }
       }
+
       return this._super(...arguments);
     },
 
@@ -79,46 +87,14 @@ export function initialize(/* application */) {
      * @param {string} routeName
      * @param {Ember.Controller} controller
      * @param {object} [changed={}]
-     * @returns {Void}
+     * @returns {void}
      */
     _scheduleParachuteChangeEvent(routeName, controller, changed = {}) {
       run.schedule('afterRender', this, () => {
-        let queryParams = get(QueryParams.metaFor(controller), 'queryParams');
-        let state = QueryParams.stateFor(controller);
-        changed = QueryParams.normalizeNamedParams(controller, changed);
+        let changeEvent = new QueryParamsChangeEvent(routeName, controller, changed);
 
-        /**
-         * @typedef {Object} QueryParamsChangeEvent
-         * @property {string} routeName
-         * @property {object} changed
-         * @property {object} queryParams
-         * @property {boolean} shouldRefresh
-         * @property {object} changes
-         */
-        /** @type {QueryParamsChangeEvent} */
-        let objToPass = {
-          routeName,
-
-          // All query params that have changed from this update event
-          changed,
-
-          // All Query Params at this given moment
-          queryParams: QueryParams.queryParamsFor(controller),
-
-          // Whether or not a model refresh should occur
-          shouldRefresh: emberArray(keys(changed)).any((key) => queryParams[key].refresh),
-
-          // All query params that are not their default
-          changes: keys(state).reduce((changes, key) => {
-            if (state[key].changed) {
-              changes[key] = state[key].value;
-            }
-            return changes;
-          }, {})
-        };
-
-        tryInvoke(controller, 'queryParamsDidChange', [objToPass]);
-        sendEvent(controller, 'queryParamsDidChange', [objToPass]);
+        tryInvoke(controller, 'queryParamsDidChange', [changeEvent]);
+        sendEvent(controller, 'queryParamsDidChange', [changeEvent]);
       });
     }
   });

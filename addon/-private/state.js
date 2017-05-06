@@ -2,7 +2,6 @@ import QueryParams from '../query-params';
 import Ember from 'ember';
 
 const {
-  get,
   assert,
   isPresent
 } = Ember;
@@ -10,7 +9,7 @@ const {
 /**
  * Creates QueryParamsState interface.
  *
- * @param {any[]} queryParamsArray
+ * @param {Ember.NativeArray} queryParamsArray
  * @param {Ember.Controller} controller
  * @returns {object}
  */
@@ -23,7 +22,7 @@ function queryParamsState(queryParamsArray, controller) {
       changed: JSON.stringify(value) !== JSON.stringify(qp.defaultValue)
     };
     return state;
-  }, {});
+  }, {}, undefined);
 }
 
 /**
@@ -36,6 +35,6 @@ function queryParamsState(queryParamsArray, controller) {
  */
 export default function queryParamsStateFor(controller) {
   assert('[ember-parachute] Cannot construct query params state object without a controller', isPresent(controller));
-  let queryParamsArray = get(QueryParams.metaFor(controller), 'queryParamsArray');
+  let { queryParamsArray } = QueryParams.metaFor(controller);
   return queryParamsState(queryParamsArray, controller);
 }

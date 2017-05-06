@@ -53,7 +53,13 @@ export const myQueryParams = new QueryParams({
     refresh: true
   },
   tags: {
-    defaultValue: ['Ember', 'Parachute']
+    defaultValue: ['Ember', 'Parachute'],
+    serialize(value) {
+      return value.toString();
+    },
+    deserialize(value = '') {
+      return value.split(',');
+    }
   }
 });
 
@@ -116,6 +122,8 @@ interface QueryParamOption {
   defaultValue: any; // required
   refresh?: boolean;
   scope?: 'controller';
+  serialize?(value: any): any;
+  deserialize?(value: any): any;
 }
 ```
 
@@ -126,7 +134,13 @@ direction: {
   as: 'dir',
   defaultValue: 'asc',
   refresh: true,
-  scope: 'controller'
+  scope: 'controller',
+  serialize(value) {
+    return value;
+  },
+  deserialize(value) {
+    return value;
+  }
 }
 ```
 
@@ -145,6 +159,49 @@ When `refresh` is `true`, the `queryParamsDidChange` hook provided by the mixin 
 ### `scope`
 
 `scope` can only be one value if specified: `controller`. This is equivalent to the `scope` option in regular Ember query params. You can read more about it in the bottom paragraph [here][ember-qp-docs].
+
+### `serialize`
+
+An optional function that lets you serialize or format a value before it is updated in the URL. For example, if your query param represents an array of values, you could do the following to avoid having the `[` and `]` being included into the URL:
+
+```js
+tags: {
+  defaultValue: ['Ember', 'Parachute'],
+  serialize(value) {
+    return value.toString();
+  },
+  deserialize(value = '') {
+    return value.split(',');
+  }
+}
+```
+
+The above will show `?tags=Ember,Parachute` (before encoding) in the URL. When you get the value though, it is still an array:
+
+```js
+controller.get('tags'); // ['Ember', 'Parachute']
+```
+
+### `deserialize`
+
+If you provide a `serialize` function, you will need to include a `deserialize` as well. This function will be used to transform the value in the URL back into the value your controller receives.
+
+For example:
+
+```js
+showReadme: {
+  as: 'readme',
+  defaultValue: true,
+  serialize(value) {
+    return value ? 'yes' : 'no';
+  },
+  deserialize(value) {
+    return value === 'yes' ? true : false;
+  }
+}
+```
+
+Your controller value for `showReadme` will still be `true` or `false`, even though it is displayed in your URL as `?showReadme=yes`.
 
 ### Extending
 
@@ -293,7 +350,7 @@ this.get('metrics').trackEvent(Object.assign({
 ### Function - `resetQueryParams`
 
 ```ts
-function resetQueryParams(params?: Array<string>): void;
+function resetQueryParams(params?: string[]): void;
 ```
 
 Reset all or given params to their default value. The second argument is an array of query params to reset. If empty, all query params will be reset. You can use this in an action to reset query params when they have changed:
