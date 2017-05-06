@@ -9,7 +9,7 @@ const {
 /**
  * Creates QueryParamsState interface.
  *
- * @param {any[]} queryParamsArray
+ * @param {Ember.NativeArray} queryParamsArray
  * @param {Ember.Controller} controller
  * @returns {object}
  */
@@ -22,7 +22,7 @@ function queryParamsState(queryParamsArray, controller) {
       changed: JSON.stringify(value) !== JSON.stringify(qp.defaultValue)
     };
     return state;
-  }, {});
+  }, {}, undefined);
 }
 
 /**

@@ -24,8 +24,10 @@ export function initialize(/* application */) {
        * @returns {any}
        */
       queryParamsDidChange(changed = {}, present = {}, removed = {}) {
-        if (QueryParams.hasParachute(this.controller)) {
-          this._scheduleParachuteChangeEvent(this.routeName, this.controller, assign({}, changed, removed));
+        let { controller, routeName } = this;
+
+        if (QueryParams.hasParachute(controller)) {
+          this._scheduleParachuteChangeEvent(routeName, controller, assign({}, changed, removed));
         }
 
         return this._super(...arguments);
@@ -85,7 +87,7 @@ export function initialize(/* application */) {
      * @param {string} routeName
      * @param {Ember.Controller} controller
      * @param {object} [changed={}]
-     * @returns {Void}
+     * @returns {void}
      */
     _scheduleParachuteChangeEvent(routeName, controller, changed = {}) {
       run.schedule('afterRender', this, () => {
