@@ -57,7 +57,7 @@
     "ember-paper": "1.0.0-alpha.19",
     "ember-qunit-nice-errors": "^1.1.2",
     "ember-resolver": "^4.0.0",
-    "ember-source": "~2.13.0",
+    "ember-source": "~2.12.0",
     "ember-truth-helpers": "1.3.0",
     "loader.js": "^4.2.3",
     "typescript": "^2.3.2"
