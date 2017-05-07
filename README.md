@@ -1,6 +1,6 @@
 # Ember Parachute
 
-[![Build Status](https://travis-ci.org/offirgolan/ember-parachute.svg)](https://travis-ci.org/offirgolan/ember-parachute)
+[![Build Status](https://travis-ci.org/offirgolan/ember-parachute.svg?branch=master)](https://travis-ci.org/offirgolan/ember-parachute)
 [![npm version](https://badge.fury.io/js/ember-parachute.svg)](http://badge.fury.io/js/ember-parachute)
 
 ## <img src="https://i.imgur.com/HaN5cCc.png" alt="ember-parachute" width="30"> Philosophy
