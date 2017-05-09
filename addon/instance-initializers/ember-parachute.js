@@ -101,6 +101,6 @@ export function initialize(/* application */) {
 }
 
 export default {
-  name: 'parachute-route',
+  name: 'ember-parachute',
   initialize
 };
