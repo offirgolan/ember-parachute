@@ -386,6 +386,8 @@ controller.setDefaultQueryParamValue('search', 'foo');
 controller.setDefaultQueryParamValue('direction', 'asc');
 ```
 
+__NOTE__: Changing the defaultValue at any point will not clear the query paramater from being shown in the URI. We do not have control over that as it is private API. 
+
 [changelog]: CHANGELOG.md
 [demo]: https://offirgolan.github.io/ember-parachute
 [ember-metrics]: https://github.com/poteto/ember-metrics
