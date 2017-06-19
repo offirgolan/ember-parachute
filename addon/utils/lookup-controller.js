@@ -11,5 +11,12 @@ const { get, getOwner } = Ember;
  * @returns {Ember.Controller}
  */
 export default function lookupController(route, ownerLookupFn = getOwner) {
-  return route.controller || ownerLookupFn(route).lookup(`controller:${get(route, 'routeName')}`);
+  let controller = get(route, 'controller');
+
+  if (!controller) {
+    let factory = ownerLookupFn(route).factoryFor(`controller:${get(route, 'routeName')}`);
+    return factory.class.proto();
+  }
+
+  return controller;
 }
