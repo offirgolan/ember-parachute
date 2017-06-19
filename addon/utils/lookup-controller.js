@@ -14,6 +14,12 @@ export default function lookupController(route, ownerLookupFn = getOwner) {
   let controller = get(route, 'controller');
 
   if (!controller) {
+    /**
+     * If the controller doesnt exist, use the class proto instead. Before, we
+     * would create the controller if it didnt exist which caused a lot of issues
+     * (especially with authentication) due to the controller being created
+     * prematurely.
+     */
     let factory = ownerLookupFn(route).factoryFor(`controller:${get(route, 'routeName')}`);
     return factory.class.proto();
   }
