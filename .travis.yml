@@ -38,6 +38,8 @@ before_install:
 
 install:
   - yarn install --no-lockfile
+
+before_script:
   - npm rebuild node-sass
 
 script:
