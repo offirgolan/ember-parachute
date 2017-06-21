@@ -13,27 +13,6 @@ const {
 
 export function initialize(/* application */) {
   Ember.Route.reopen({
-    actions: {
-      /**
-       * Route hook that fires when query params are changed.
-       *
-       * @public
-       * @param {object} [changed={}]
-       * @param {object} [present={}]
-       * @param {object} [removed={}]
-       * @returns {any}
-       */
-      queryParamsDidChange(changed = {}, present = {}, removed = {}) {
-        let { controller, routeName } = this;
-
-        if (QueryParams.hasParachute(controller)) {
-          this._scheduleParachuteChangeEvent(routeName, controller, assign({}, changed, removed));
-        }
-
-        return this._super(...arguments);
-      }
-    },
-
     /**
      * Serialize query param value if a given query param has a `serialize`
      * method.
@@ -96,6 +75,27 @@ export function initialize(/* application */) {
         tryInvoke(controller, 'queryParamsDidChange', [changeEvent]);
         sendEvent(controller, 'queryParamsDidChange', [changeEvent]);
       });
+    },
+
+    actions: {
+      /**
+       * Route hook that fires when query params are changed.
+       *
+       * @public
+       * @param {object} [changed={}]
+       * @param {object} [present={}]
+       * @param {object} [removed={}]
+       * @returns {any}
+       */
+      queryParamsDidChange(changed = {}, present = {}, removed = {}) {
+        let { controller, routeName } = this;
+
+        if (QueryParams.hasParachute(controller)) {
+          this._scheduleParachuteChangeEvent(routeName, controller, assign({}, changed, removed));
+        }
+
+        return this._super(...arguments);
+      }
     }
   });
 }
