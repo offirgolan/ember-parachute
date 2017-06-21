@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.2.2
+
+### Pull Requests
+
+- [#25](https://github.com/offirgolan/ember-parachute/pull/25)  Use controller class `proto` instead of creating it if not available  *by [Offir Golan](https://github.com/offirgolan)*
+
 ## v0.2.0
 
 ### Pull Requests
