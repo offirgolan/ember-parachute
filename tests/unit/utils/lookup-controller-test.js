@@ -1,22 +1,26 @@
+import Ember from 'ember';
 import lookupController from 'ember-parachute/utils/lookup-controller';
 import { module, test } from 'qunit';
 
 module('Unit | Utility | lookup controller');
 
 const dummyRoute = {
-  controller: { isController: true }
+  controller: Ember.Controller.create()
 }
+
 function dummyLookup() {
   return {
-    lookup() {
-      return { isController: true };
+    factoryFor() {
+      return {
+        class: Ember.Controller
+      };
     }
   };
 }
 
 test('it looks up the controller from a route', function(assert) {
   let result = lookupController(dummyRoute);
-  assert.ok(result.isController);
+  assert.equal(result, dummyRoute.controller);
 });
 
 test('it looks up the controller from a route owner if route controller is not defined', function(assert) {
