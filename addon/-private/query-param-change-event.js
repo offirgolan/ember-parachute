@@ -38,7 +38,9 @@ export default class QueryParamsChangeEvent {
      */
     this.changed = queryParamsArray.reduce((changedParams, qp) => {
       if (changed[qp.as]) {
-        changedParams[qp.key] = canInvoke(qp, 'deserialize') ? qp.deserialize(changed[qp.as]) : changed[qp.as];
+        changedParams[qp.key] = canInvoke(qp, 'deserialize')
+          ? qp.deserialize.call(controller, changed[qp.as])
+          : changed[qp.as];
       }
       return changedParams;
     }, {}, undefined);
