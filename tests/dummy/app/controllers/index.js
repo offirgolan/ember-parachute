@@ -30,15 +30,22 @@ const queryParams = new QueryParams({
     defaultValue: ['Ember', 'Parachute'],
     refresh: true,
     serialize(value) {
+      if (!this.get('shouldSerialize')) {
+        return value;
+      }
       return value.toString();
     },
     deserialize(value = '') {
+      if (!this.get('shouldSerialize')) {
+        return value;
+      }
       return emberArray(value.split(','));
     }
   }
 });
 
 export default Ember.Controller.extend(queryParams.Mixin, {
+  shouldSerialize: true,
   queryParamsChanged: computed.or('queryParamsState.{page,search,tags}.changed'),
 
   queryParamsDidChange({ shouldRefresh, queryParams }) {
