@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import QueryParams from '../query-params';
-import QueryParamsChangeEvent from '../-private/query-param-change-event';
+import ParachuteEvent from '../-private/parachute-event';
 import lookupController from '../utils/lookup-controller';
 
 const {
@@ -18,11 +18,14 @@ export function initialize(/* application */) {
 
       if (QueryParams.hasParachute(controller)) {
         let { routeName } = this;
-        let changeEvent = new QueryParamsChangeEvent(routeName, controller, {});
+        let event = new ParachuteEvent(routeName, controller, {});
 
-        changeEvent.changed = changeEvent.changes;
-        tryInvoke(controller, 'setup', [changeEvent]);
-        sendEvent(controller, 'setup', [changeEvent]);
+        // Overrides
+        event.changed = event.changes;
+        event.shouldRefresh = true;
+
+        tryInvoke(controller, 'setup', [event]);
+        sendEvent(controller, 'setup', [event]);
       }
     },
 
@@ -31,10 +34,13 @@ export function initialize(/* application */) {
 
       if (QueryParams.hasParachute(controller)) {
         let { routeName } = this;
-        let changeEvent = new QueryParamsChangeEvent(routeName, controller, {});
+        let event = new ParachuteEvent(routeName, controller, {});
 
-        tryInvoke(controller, 'reset', [changeEvent, isExiting]);
-        sendEvent(controller, 'reset', [changeEvent, isExiting]);
+        // Overrides
+        event.shouldRefresh = false;
+
+        tryInvoke(controller, 'reset', [event, isExiting]);
+        sendEvent(controller, 'reset', [event, isExiting]);
       }
     },
 
@@ -95,10 +101,10 @@ export function initialize(/* application */) {
      */
     _scheduleParachuteChangeEvent(routeName, controller, changed = {}) {
       run.schedule('afterRender', this, () => {
-        let changeEvent = new QueryParamsChangeEvent(routeName, controller, changed);
+        let event = new ParachuteEvent(routeName, controller, changed);
 
-        tryInvoke(controller, 'queryParamsDidChange', [changeEvent]);
-        sendEvent(controller, 'queryParamsDidChange', [changeEvent]);
+        tryInvoke(controller, 'queryParamsDidChange', [event]);
+        sendEvent(controller, 'queryParamsDidChange', [event]);
       });
     },
 
