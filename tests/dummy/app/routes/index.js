@@ -1,5 +1,9 @@
 import Ember from 'ember';
-import { task, timeout } from 'ember-concurrency';
+
+const {
+  run,
+  RSVP: { Promise }
+} = Ember;
 
 export default Ember.Route.extend({
   queryParams: {
@@ -8,19 +12,9 @@ export default Ember.Route.extend({
     search: { refreshModel: true }
   },
 
-  fetchModel: task(function *() {
-    yield timeout(1000);
-  }).restartable(),
-
-  model(params) {
-    if (!params.parachuteOpen) {
-      return this.get('fetchModel').perform();
-    }
-  },
-
-  setupController(controller) {
-    if (controller.get('parachuteOpen')) {
-      controller.get('fetchModel').perform();
+  model({ parachuteOpen }) {
+    if (!parachuteOpen) {
+      return new Promise(resolve => run.later(resolve, 1000));
     }
   }
 });

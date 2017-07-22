@@ -13,6 +13,31 @@ const {
 
 export function initialize(/* application */) {
   Ember.Route.reopen({
+    setupController(controller) {
+      this._super(...arguments);
+
+      if (QueryParams.hasParachute(controller)) {
+        let { routeName } = this;
+        let changeEvent = new QueryParamsChangeEvent(routeName, controller, {});
+
+        changeEvent.changed = changeEvent.changes;
+        tryInvoke(controller, 'setup', [changeEvent]);
+        sendEvent(controller, 'setup', [changeEvent]);
+      }
+    },
+
+    resetController(controller, isExiting) {
+      this._super(...arguments);
+
+      if (QueryParams.hasParachute(controller)) {
+        let { routeName } = this;
+        let changeEvent = new QueryParamsChangeEvent(routeName, controller, {});
+
+        tryInvoke(controller, 'reset', [changeEvent, isExiting]);
+        sendEvent(controller, 'reset', [changeEvent, isExiting]);
+      }
+    },
+
     /**
      * Serialize query param value if a given query param has a `serialize`
      * method.

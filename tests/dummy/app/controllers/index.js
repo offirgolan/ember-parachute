@@ -41,6 +41,18 @@ const queryParams = new QueryParams({
 export default Ember.Controller.extend(queryParams.Mixin, {
   queryParamsChanged: computed.or('queryParamsState.{page,search,tags}.changed'),
 
+  setup({ queryParams }) {
+    if (queryParams.parachuteOpen) {
+      this.get('fetchModel').perform();
+    }
+  },
+
+  reset(_, isExiting) {
+    if (isExiting) {
+      this.resetQueryParams();
+    }
+  },
+
   queryParamsDidChange({ shouldRefresh, queryParams }) {
     if (shouldRefresh && queryParams.parachuteOpen) {
       this.get('fetchModel').perform();

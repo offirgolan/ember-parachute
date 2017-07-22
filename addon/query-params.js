@@ -261,6 +261,10 @@ export default class QueryParams {
        */
       queryParamsDidChange() {},
 
+      setup() {},
+
+      reset() {},
+
       /**
        * Reset query params to their default value. Accepts an optional array
        * of query param keys to reset.
