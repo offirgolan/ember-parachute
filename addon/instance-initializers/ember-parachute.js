@@ -147,7 +147,7 @@ export function initialize(/* application */) {
         let { qpMapForRoute } = QueryParams.metaFor(controller);
 
         keys(qpMapForRoute).forEach(key => {
-          qpMapForRoute[key] = assign(qpMapForRoute[key], qpMap[key]);
+          qpMapForRoute[key] = assign({}, qpMapForRoute[key], qpMap[key]);
         });
 
         this.set('queryParams', qpMapForRoute);
