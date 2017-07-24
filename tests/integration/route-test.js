@@ -26,22 +26,20 @@ const queryParams = new QueryParams({
   }
 });
 
-const Controller = Ember.Controller.extend(queryParams.Mixin);
-
-function getRoute(context, routeName) {
-  return getOwner(context).lookup(`route:${routeName}`);
-}
-
 const EmberRoute = Ember.Route;
+const Controller = Ember.Controller.extend(queryParams.Mixin);
+let route;
 
 moduleFor('foo', 'Integration | Route', {
   integration: true,
 
   beforeEach() {
     Ember.Route = Ember.Route.extend();
-    initialize();
 
+    initialize();
     this.register('route:foo', Ember.Route.extend());
+
+    route = getOwner(this).lookup('route:foo');
   },
 
   afterEach() {
@@ -52,7 +50,6 @@ moduleFor('foo', 'Integration | Route', {
 test('#setup', function(assert) {
   assert.expect(2);
 
-  let route = getRoute(this, 'foo');
   let controller = Controller.extend({
     setup(event) {
       assert.ok(event instanceof ParachuteEvent);
@@ -70,7 +67,6 @@ test('#setup', function(assert) {
 test('#reset', function(assert) {
   assert.expect(4);
 
-  let route = getRoute(this, 'foo');
   let controller = Controller.extend({
     reset(event, isExiting) {
       assert.ok(event instanceof ParachuteEvent);
@@ -89,7 +85,6 @@ test('#reset', function(assert) {
 test('#queryParamsDidChange', function(assert) {
   assert.expect(2);
 
-  let route = getRoute(this, 'foo');
   let controller = Controller.extend({
     queryParamsDidChange(event) {
       assert.ok(event instanceof ParachuteEvent);
@@ -113,7 +108,6 @@ test('#queryParamsDidChange', function(assert) {
 test('route queryParams map', function(assert) {
   assert.expect(1);
 
-  let route = getRoute(this, 'foo');
   let controller = Controller.create();
 
   route.set('queryParams', {
