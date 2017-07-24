@@ -97,7 +97,7 @@ export default Ember.Controller.extend(myQueryParams.Mixin, {
 });
 ```
 
-In the above example, the mixin adds a `queryParamsDidChange` hook. You can use this hook to perform tasks like fetching data based on the query params. Additionally, you can create a computed property observing `queryParamsState` that will allow you to display a button in your UI that can clear all query params via `resetQueryParams`.
+In the above example, the mixin adds the `setup`, `reset`, and `queryParamsDidChange` hooks. You can use these hooks to perform tasks like fetching data based on the query params or resetting them when leaving the route. Additionally, you can create a computed property observing `queryParamsState` that will allow you to display a button in your UI that can clear all query params via `resetQueryParams`.
 
 Please continue reading for more advanced usage.
 
@@ -325,7 +325,7 @@ interface ParachuteEvent {
 }
 ```
 
-#### `queryParamsDidChange`
+### Hook - `queryParamsDidChange`
 
 ```ts
 function queryParamsDidChange(queryParamsChangedEvent: ParachuteEvent): void;
@@ -345,7 +345,7 @@ export default Controller.extend(myQueryParams.Mixin, {
 });
 ```
 
-#### `setup`
+### Hook - `setup`
 
 ```ts
 function setup(queryParamsChangedEvent: ParachuteEvent): void;
@@ -359,7 +359,7 @@ export default Controller.extend(myQueryParams.Mixin, {
 });
 ```
 
-#### `reset`
+### Hook - `reset`
 
 ```ts
 function reset(queryParamsChangedEvent: ParachuteEvent, isExiting: boolean): void;
@@ -375,7 +375,7 @@ export default Controller.extend(myQueryParams.Mixin, {
 });
 ```
 
-### Events - `queryParamsDidChange`
+### Events
 
 The controller also emits an event for each hook which receives the same arguments:
 
@@ -443,10 +443,10 @@ controller.setDefaultQueryParamValue('search', 'foo');
 controller.setDefaultQueryParamValue('direction', 'asc');
 ```
 
-__NOTE__: Changing the defaultValue at any point will not clear the query paramater from being shown in the URI. We do not have control over that as it is private API.
+__NOTE__: Changing the defaultValue at any point will not clear the query parameter from being shown in the URI. We do not have control over that as it is private API.
 
 [changelog]: CHANGELOG.md
 [demo]: https://offirgolan.github.io/ember-parachute
 [ember-metrics]: https://github.com/poteto/ember-metrics
-[ember-qp-docs]: https://guides.emberjs.com/v2.5.0/routing/query-params/
+[ember-qp-docs]: https://guides.emberjs.com/v2.14.0/routing/query-params/
 [skeleton-ui]: https://medium.com/ux-for-india/facilitating-better-interactions-using-skeleton-screens-a034a51120a5
