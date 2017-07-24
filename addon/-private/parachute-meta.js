@@ -29,9 +29,28 @@ export default class ParachuteMeta {
       qps[key] = new QueryParam(key, queryParams[key]);
       return qps;
     }, {});
+
     /** @type {Ember.NativeArray} */
     this.queryParamsArray = emberArray(keys(this.queryParams).map((key) => {
       return this.queryParams[key];
     }));
+
+    /** @type {object} */
+    this.qpMapForController = this.queryParamsArray.reduce((qps, { key, as, scope }) => {
+      qps[key] = { as, scope };
+      return qps;
+    }, {});
+
+    /** @type {object} */
+    this.qpMapForRoute = this.queryParamsArray.reduce((qps, { key, replace }) => {
+      qps[key] = { replace };
+      return qps;
+    }, {});
+
+    /** @type {object} */
+    this.defaultValues = this.queryParamsArray.reduce((defaults, { key, defaultValue }) => {
+      defaults[key] = defaultValue;
+      return defaults;
+    }, {});
   }
 }

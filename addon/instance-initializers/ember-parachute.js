@@ -17,6 +17,8 @@ export function initialize(/* application */) {
       this._super(...arguments);
 
       if (QueryParams.hasParachute(controller)) {
+        this._setupParachuteQueryParamsMap(controller);
+
         let { routeName } = this;
         let event = new ParachuteEvent(routeName, controller, {});
 
@@ -106,6 +108,22 @@ export function initialize(/* application */) {
         tryInvoke(controller, 'queryParamsDidChange', [event]);
         sendEvent(controller, 'queryParamsDidChange', [event]);
       });
+    },
+
+    /**
+     * Setup the route's `queryParams` map if it doesnt already exist from
+     * the controller's Parachute meta.
+     *
+     * @method _setupParachuteQueryParamsMap
+     * @private
+     * @param {Ember.Controller} controller
+     * @returns {void}
+     */
+    _setupParachuteQueryParamsMap(controller) {
+      if (!this.get('queryParams')) {
+        let { qpMapForRoute } = QueryParams.metaFor(controller);
+        this.set('queryParams', qpMapForRoute);
+      }
     },
 
     actions: {
