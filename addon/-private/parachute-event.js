@@ -30,6 +30,10 @@ export default class ParachuteEvent {
     let { queryParams, queryParamsArray } = QueryParams.metaFor(controller);
     let state = QueryParams.stateFor(controller);
 
+    /**
+     * The route the event was fired from
+     * @type {string}
+     */
     this.routeName = routeName;
 
     /**

@@ -250,8 +250,20 @@ export default class QueryParams {
        */
       queryParamsDidChange() {},
 
+      /**
+       * Overridable hook that fires after the route calls `setupController`
+       *
+       * @public
+       * @returns {void}
+       */
       setup() {},
 
+      /**
+       * Overridable hook that fires after the route calls `resetController`
+       *
+       * @public
+       * @returns {void}
+       */
       reset() {},
 
       /**

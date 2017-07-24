@@ -11,8 +11,21 @@ const {
   sendEvent
 } = Ember;
 
+const {
+  keys
+} = Object;
+
 export function initialize(/* application */) {
   Ember.Route.reopen({
+    /**
+     * Setup the route's `queryParams` map and call the `setup` hook
+     * on the controller.
+     *
+     * @method setupController
+     * @public
+     * @param {Ember.Controller} controller
+     * @returns {void}
+     */
     setupController(controller) {
       this._super(...arguments);
 
@@ -31,6 +44,15 @@ export function initialize(/* application */) {
       }
     },
 
+    /**
+     * Call the `reset` hook on the controller.
+     *
+     * @method resetController
+     * @public
+     * @param {Ember.Controller} controller
+     * @param  {Boolean} isExiting
+     * @returns {void}
+     */
     resetController(controller, isExiting) {
       this._super(...arguments);
 
@@ -120,9 +142,16 @@ export function initialize(/* application */) {
      * @returns {void}
      */
     _setupParachuteQueryParamsMap(controller) {
-      if (!this.get('queryParams')) {
+      if (!this.__hasSetupParachuteQPs) {
+        let qpMap = this.get('queryParams');
         let { qpMapForRoute } = QueryParams.metaFor(controller);
+
+        keys(qpMapForRoute).forEach(key => {
+          qpMapForRoute[key] = assign(qpMapForRoute[key], qpMap[key]);
+        });
+
         this.set('queryParams', qpMapForRoute);
+        this.__hasSetupParachuteQPs = true;
       }
     },
 
