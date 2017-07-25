@@ -10,7 +10,8 @@ const dummyQpMap = {
   },
   bar: {
     defaultValue: 1,
-    as: 'BAR'
+    as: 'BAR',
+    replace: true
   }
 };
 
@@ -22,6 +23,7 @@ test('#queryParams', function(assert) {
       'deserialize': undefined,
       'key': 'bar',
       'refresh': false,
+      'replace': true,
       'scope': undefined,
       'serialize': undefined
     },
@@ -31,10 +33,12 @@ test('#queryParams', function(assert) {
       'deserialize': undefined,
       'key': 'foo',
       'refresh': true,
+      'replace': false,
       'scope': undefined,
       'serialize': undefined
     }
   };
+
   let meta = new ParachuteMeta(dummyQpMap);
   assert.propEqual(meta.queryParams, expectedResult);
 });
@@ -47,6 +51,7 @@ test('#queryParamsArray', function(assert) {
       'deserialize': undefined,
       'key': 'foo',
       'refresh': true,
+      'replace': false,
       'scope': undefined,
       'serialize': undefined
     },
@@ -56,10 +61,52 @@ test('#queryParamsArray', function(assert) {
       'deserialize': undefined,
       'key': 'bar',
       'refresh': false,
+      'replace': true,
       'scope': undefined,
       'serialize': undefined
     }
   ];
+
   let meta = new ParachuteMeta(dummyQpMap);
   assert.propEqual(meta.queryParamsArray, expectedResult);
+});
+
+test('#qpMapForController', function(assert) {
+  let expectedResult = {
+    foo: {
+      'as': 'foo',
+      'scope': undefined
+    },
+    bar: {
+      'as': 'BAR',
+      'scope': undefined
+    }
+  };
+
+  let meta = new ParachuteMeta(dummyQpMap);
+  assert.propEqual(meta.qpMapForController, expectedResult);
+});
+
+test('#qpMapForRoute', function(assert) {
+  let expectedResult = {
+    foo: {
+      'replace': false
+    },
+    bar: {
+      'replace': true
+    }
+  };
+
+  let meta = new ParachuteMeta(dummyQpMap);
+  assert.propEqual(meta.qpMapForRoute, expectedResult);
+});
+
+test('#defaultValues', function(assert) {
+  let expectedResult = {
+    foo: 'foo',
+    bar: 1
+  };
+
+  let meta = new ParachuteMeta(dummyQpMap);
+  assert.propEqual(meta.defaultValues, expectedResult);
 });

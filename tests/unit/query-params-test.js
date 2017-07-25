@@ -42,10 +42,8 @@ module('Unit | QueryParams', {
 });
 
 test('asserts', function(assert) {
-  assert.expect(4);
+  assert.expect(2);
 
-  assert.throws(() => new QueryParams());
-  assert.throws(() => new QueryParams({}, {}, {}));
   assert.throws(() => new QueryParams({ foo: {} }));
   assert.throws(() => QueryParams.queryParamsFor(Ember.Object.create()));
 });

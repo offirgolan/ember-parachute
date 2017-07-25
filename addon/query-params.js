@@ -43,8 +43,6 @@ export default class QueryParams {
       return qps;
     }, {});
 
-    assert('[ember-parachute] You cannot pass an empty object to the QueryParams.', queryParams && !isEmpty(keys(queryParams)));
-
     this.queryParams = queryParams;
     this.Mixin = this._generateMixin();
   }
@@ -198,14 +196,8 @@ export default class QueryParams {
    * @returns {Ember.Mixin}
    */
   _generateMixin() {
-    let { queryParams, queryParamsArray } = this._generateMeta();
+    let { queryParams, defaultValues, qpMapForController } = this._generateMeta();
 
-    // Get all the default values for each QP `key` to be set onto the controller
-    /** @type {object} */
-    let defaultValues = queryParamsArray.reduce((defaults, { key, defaultValue }) => {
-      defaults[key] = defaultValue;
-      return defaults;
-    }, {}, undefined);
     /** @type {Ember.Mixin} */
     let ControllerMixin = Mixin.create(defaultValues, {
       /**
@@ -228,10 +220,7 @@ export default class QueryParams {
        * @public
        * @property {object}
        */
-      queryParams: queryParamsArray.reduce((qps, { key, as, scope }) => {
-        qps[key] = { as, scope };
-        return qps;
-      }, {}, undefined),
+      queryParams: qpMapForController,
 
       /**
        * Create a CP that is a collection of all QPs and their value
@@ -260,6 +249,22 @@ export default class QueryParams {
        * @returns {void}
        */
       queryParamsDidChange() {},
+
+      /**
+       * Overridable hook that fires after the route calls `setupController`
+       *
+       * @public
+       * @returns {void}
+       */
+      setup() {},
+
+      /**
+       * Overridable hook that fires after the route calls `resetController`
+       *
+       * @public
+       * @returns {void}
+       */
+      reset() {},
 
       /**
        * Reset query params to their default value. Accepts an optional array

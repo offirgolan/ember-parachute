@@ -46,7 +46,8 @@ export const myQueryParams = new QueryParams({
   },
   page: {
     defaultValue: 1,
-    refresh: true
+    refresh: true,
+    replace: true
   },
   search: {
     defaultValue: '',
@@ -66,10 +67,20 @@ export const myQueryParams = new QueryParams({
 export default Ember.Controller.extend(myQueryParams.Mixin, {
   queryParamsChanged: Ember.computed.or('queryParamsState.{page,search,tags}.changed'),
 
+  setup({ queryParams }) {
+    this.fetchData(queryParams);
+  },
+
   queryParamsDidChange({ shouldRefresh, queryParams }) {
     // if any query param with `refresh: true` is changed, `shouldRefresh` is `true`
     if (shouldRefresh) {
       this.fetchData(queryParams);
+    }
+  },
+
+  reset({ queryParams }, isExiting) {
+    if (isExiting) {
+      this.resetQueryParams();
     }
   },
 
@@ -86,7 +97,7 @@ export default Ember.Controller.extend(myQueryParams.Mixin, {
 });
 ```
 
-In the above example, the mixin adds a `queryParamsDidChange` hook. You can use this hook to perform tasks like fetching data based on the query params. Additionally, you can create a computed property observing `queryParamsState` that will allow you to display a button in your UI that can clear all query params via `resetQueryParams`.
+In the above example, the mixin adds the `setup`, `reset`, and `queryParamsDidChange` hooks. You can use these hooks to perform tasks like fetching data based on the query params or resetting them when leaving the route. Additionally, you can create a computed property observing `queryParamsState` that will allow you to display a button in your UI that can clear all query params via `resetQueryParams`.
 
 Please continue reading for more advanced usage.
 
@@ -105,7 +116,8 @@ const myQueryParams = new QueryParams({
   },
   page: {
     defaultValue: 1,
-    refresh: true
+    refresh: true,
+    replace: true
   },
   search: {
     defaultValue: '',
@@ -121,6 +133,7 @@ interface QueryParamOption {
   as?: string;
   defaultValue: any; // required
   refresh?: boolean;
+  replace?: boolean;
   scope?: 'controller';
   serialize?(value: any): any;
   deserialize?(value: any): any;
@@ -155,6 +168,10 @@ The `as` option lets you optionally override the query param URL key for a query
 ### `refresh`
 
 When `refresh` is `true`, the `queryParamsDidChange` hook provided by the mixin will notify you when a refreshable query param has changed. You can use that value to determine whether or not you need to refetch data.
+
+### `replace`
+
+By default, Ember will use **pushState** to update the URL in the address bar in response to a controller query param property change, but when `replace` is `true` it will use **replaceState** instead (which prevents an additional item from being added to your browser's history).
 
 ### `scope`
 
@@ -279,9 +296,9 @@ queryParamsChanged: Ember.computed.or('queryParamsState.{page,search,tags}.chang
 
 You can then use this CP to conditionally display a button that can clear all query params to their default values.
 
-### Function - `queryParamsDidChange`
+### Hooks
 
-The mixin also adds a hook that you can use to update your controller when any query params change. The hook receives a single argument:
+All hooks will receives a `ParachuteEvent` as an argument which can be defined as:
 
 ```ts
 // what changed
@@ -299,18 +316,20 @@ interface QueryParams {
   [queryParamKey: string]: any;
 }
 
-interface QueryParamsChangedEvent {
+interface ParachuteEvent {
   changes: QueryParamsChanges;
   changed: QueryParamsChanged;
   queryParams: QueryParams;
   routeName: string;
   shouldRefresh: boolean;
 }
-
-function queryParamsDidChange(queryParamsChangedEvent: QueryParamsChangedEvent): void;
 ```
 
-You can destructure and use only what you need:
+### Hook - `queryParamsDidChange`
+
+```ts
+function queryParamsDidChange(queryParamsChangedEvent: ParachuteEvent): void;
+```
 
 ```js
 export default Controller.extend(myQueryParams.Mixin, {
@@ -326,13 +345,51 @@ export default Controller.extend(myQueryParams.Mixin, {
 });
 ```
 
-### Event - `queryParamsDidChange`
+### Hook - `setup`
 
-The controller also emits an event when query params change. This receives the same `QueryParamsChangedEvent` object as the `queryParamsDidChange` hook:
+```ts
+function setup(queryParamsChangedEvent: ParachuteEvent): void;
+```
+
+```js
+export default Controller.extend(myQueryParams.Mixin, {
+  setup({ routeName, shouldRefresh, queryParams, changed, changes }) {
+    // Fetch some initial data & setup the controller
+  }
+});
+```
+
+### Hook - `reset`
+
+```ts
+function reset(queryParamsChangedEvent: ParachuteEvent, isExiting: boolean): void;
+```
+
+```js
+export default Controller.extend(myQueryParams.Mixin, {
+  reset({ routeName, shouldRefresh, queryParams, changed, changes }, isExiting) {
+    if (isExiting) {
+      this.resetQueryParams();
+    }
+  }
+});
+```
+
+### Events
+
+The controller also emits an event for each hook which receives the same arguments:
 
 ```ts
 export default Ember.Controller.extend({
-  onQueryParamsChanged: Ember.on('queryParamsDidChange', function(queryParamsChangedEvent: QueryParamsChangedEvent) {
+  onChange: Ember.on('queryParamsDidChange', function(queryParamsChangedEvent: ParachuteEvent) {
+    // ...
+  }),
+
+  onSetup: Ember.on('setup', function(queryParamsChangedEvent: ParachuteEvent) {
+    // ...
+  }),
+
+  onReset: Ember.on('reset', function(queryParamsChangedEvent: ParachuteEvent, isExiting: boolean) {
     // ...
   })
 });
@@ -386,10 +443,10 @@ controller.setDefaultQueryParamValue('search', 'foo');
 controller.setDefaultQueryParamValue('direction', 'asc');
 ```
 
-__NOTE__: Changing the defaultValue at any point will not clear the query paramater from being shown in the URI. We do not have control over that as it is private API. 
+__NOTE__: Changing the defaultValue at any point will not clear the query parameter from being shown in the URI. We do not have control over that as it is private API.
 
 [changelog]: CHANGELOG.md
 [demo]: https://offirgolan.github.io/ember-parachute
 [ember-metrics]: https://github.com/poteto/ember-metrics
-[ember-qp-docs]: https://guides.emberjs.com/v2.5.0/routing/query-params/
+[ember-qp-docs]: https://guides.emberjs.com/v2.14.0/routing/query-params/
 [skeleton-ui]: https://medium.com/ux-for-india/facilitating-better-interactions-using-skeleton-screens-a034a51120a5
