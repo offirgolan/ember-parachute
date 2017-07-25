@@ -1,12 +1,13 @@
 import Ember from 'ember';
 import QueryParams from 'ember-parachute';
 import ParachuteEvent from 'ember-parachute/-private/parachute-event';
-import { initialize } from 'dummy/instance-initializers/ember-parachute';
-import { moduleFor, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import destroyApp from '../../helpers/destroy-app';
+import startApp from '../../helpers/start-app';
 
 const {
   on,
-  getOwner
+  run
 } = Ember;
 
 const queryParams = new QueryParams({
@@ -30,19 +31,24 @@ const EmberRoute = Ember.Route;
 const Controller = Ember.Controller.extend(queryParams.Mixin);
 let route;
 
-moduleFor('foo', 'Integration | Route', {
-  integration: true,
-
+module('Unit | Route', {
   beforeEach() {
     Ember.Route = Ember.Route.extend();
 
-    initialize();
-    this.register('route:foo', Ember.Route.extend());
+    run(() => {
+      this.application = startApp();
+      this.application.register('route:foo', Ember.Route.extend());
 
-    route = getOwner(this).lookup('route:foo');
+      this.appInstance = this.application.buildInstance();
+      this.appInstance.boot();
+
+      route = this.appInstance.lookup('route:foo');
+    });
   },
 
   afterEach() {
+    run(this.appInstance, 'destroy');
+    destroyApp(this.application);
     Ember.Route = EmberRoute;
   }
 });
