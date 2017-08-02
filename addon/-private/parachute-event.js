@@ -29,6 +29,7 @@ export default class ParachuteEvent {
   constructor(routeName, controller, changed = {}) {
     let { queryParams, queryParamsArray } = QueryParams.metaFor(controller);
     let state = QueryParams.stateFor(controller);
+    let changedKeys = keys(changed);
 
     /**
      * The route the event was fired from
@@ -41,7 +42,7 @@ export default class ParachuteEvent {
      * @type {object}
      */
     this.changed = queryParamsArray.reduce((changedParams, qp) => {
-      if (changed[qp.as]) {
+      if (changedKeys.includes(qp.as)) {
         changedParams[qp.key] = canInvoke(qp, 'deserialize') ? qp.deserialize(changed[qp.as]) : changed[qp.as];
       }
       return changedParams;
