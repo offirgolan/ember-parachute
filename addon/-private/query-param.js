@@ -40,6 +40,9 @@ export default class QueryParam {
     this.refresh = Boolean(options.refresh);
 
     /** @type {boolean} */
+    this.refreshModel = Boolean(options.refreshModel);
+
+    /** @type {boolean} */
     this.replace = Boolean(options.replace);
 
     /** @type {function(any): any} */

@@ -11,7 +11,8 @@ const dummyQpMap = {
   bar: {
     defaultValue: 1,
     as: 'BAR',
-    replace: true
+    replace: true,
+    refreshModel: true
   }
 };
 
@@ -23,6 +24,7 @@ test('#queryParams', function(assert) {
       'deserialize': undefined,
       'key': 'bar',
       'refresh': false,
+      'refreshModel': true,
       'replace': true,
       'scope': undefined,
       'serialize': undefined
@@ -33,6 +35,7 @@ test('#queryParams', function(assert) {
       'deserialize': undefined,
       'key': 'foo',
       'refresh': true,
+      'refreshModel': false,
       'replace': false,
       'scope': undefined,
       'serialize': undefined
@@ -51,6 +54,7 @@ test('#queryParamsArray', function(assert) {
       'deserialize': undefined,
       'key': 'foo',
       'refresh': true,
+      'refreshModel': false,
       'replace': false,
       'scope': undefined,
       'serialize': undefined
@@ -61,6 +65,7 @@ test('#queryParamsArray', function(assert) {
       'deserialize': undefined,
       'key': 'bar',
       'refresh': false,
+      'refreshModel': true,
       'replace': true,
       'scope': undefined,
       'serialize': undefined
@@ -90,10 +95,12 @@ test('#qpMapForController', function(assert) {
 test('#qpMapForRoute', function(assert) {
   let expectedResult = {
     foo: {
-      'replace': false
+      'replace': false,
+      'refreshModel': false
     },
     bar: {
-      'replace': true
+      'replace': true,
+      'refreshModel': true
     }
   };
 

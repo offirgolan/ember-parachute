@@ -2,6 +2,7 @@ import Ember from 'ember';
 import QueryParams from '../query-params';
 import ParachuteEvent from '../-private/parachute-event';
 import lookupController from '../utils/lookup-controller';
+import { PARACHUTE_TIMER } from '../-private/symbols';
 
 const {
   run,
@@ -124,12 +125,18 @@ export function initialize(/* application */) {
      * @returns {void}
      */
     _scheduleParachuteChangeEvent(routeName, controller, changed = {}) {
-      run.schedule('afterRender', this, () => {
+      this[PARACHUTE_TIMER] = run.schedule('afterRender', this, () => {
         let event = new ParachuteEvent(routeName, controller, changed);
 
         tryInvoke(controller, 'queryParamsDidChange', [event]);
         sendEvent(controller, 'queryParamsDidChange', [event]);
       });
+    },
+
+    willDestroy() {
+      this._super(...arguments);
+
+      run.cancel(this[PARACHUTE_TIMER]);
     },
 
     /**

@@ -11,6 +11,10 @@ const {
 } = Ember;
 
 const queryParams = new QueryParams({
+  category: {
+    defaultValue: '',
+    refreshModel: true
+  },
   direction: {
     as: 'dir',
     defaultValue: 'asc',
@@ -123,8 +127,9 @@ test('route queryParams map', function(assert) {
   route.setupController(controller);
 
   assert.propEqual(route.get('queryParams'), {
-    direction: { replace: false },
-    page: { replace: true },
-    search: { replace: false, refreshModel: true }
+    direction: { replace: false, refreshModel: false },
+    page: { replace: true, refreshModel: false },
+    search: { replace: false, refreshModel: true },
+    category: { replace: false, refreshModel: true }
   });
 });
