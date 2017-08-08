@@ -42,8 +42,8 @@ export default class ParachuteMeta {
     }, {});
 
     /** @type {object} */
-    this.qpMapForRoute = this.queryParamsArray.reduce((qps, { key, replace }) => {
-      qps[key] = { replace };
+    this.qpMapForRoute = this.queryParamsArray.reduce((qps, { key, replace, refreshModel }) => {
+      qps[key] = { replace, refreshModel };
       return qps;
     }, {});
 
