@@ -29,7 +29,7 @@ export default class ParachuteEvent {
   constructor(routeName, controller, changed = {}) {
     let { queryParams, queryParamsArray } = QueryParams.metaFor(controller);
     let state = QueryParams.stateFor(controller);
-    let changedKeys = keys(changed);
+    let changedKeys = emberArray(keys(changed));
 
     /**
      * The route the event was fired from
