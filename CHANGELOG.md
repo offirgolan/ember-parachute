@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.3.1
+
+### Pull Requests
+
+- [#33](https://github.com/offirgolan/ember-parachute/pull/33)  Replace use of Array.p.includes to fix IE support  *by [Jason Mitchell](https://github.com/jasonmit)*
+
 ## v0.3.0
 
 ### Pull Requests
