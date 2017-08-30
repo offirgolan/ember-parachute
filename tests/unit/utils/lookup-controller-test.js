@@ -32,3 +32,12 @@ test('it looks up the controller from a route owner if route controller is not d
   let result = lookupController({}, dummyLookup);
   assert.ok(result.parachuteController);
 });
+
+test('it looks up the controller from a route when it has controllerName set', function(assert) {
+  let dummyRouteWithControllerName = {
+    controllerName: 'something.else'
+  }
+
+  let result = lookupController(dummyRouteWithControllerName, dummyLookup);
+  assert.ok(result.parachuteController);
+});
