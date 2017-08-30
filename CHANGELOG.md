@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.3.2
+
+### Pull Requests
+
+- [#34](https://github.com/offirgolan/ember-parachute/pull/34)  Fix for setting controllerName in route  *by [abhilashlr](https://github.com/abhilashlr)*
+
 ## v0.3.1
 
 ### Pull Requests
