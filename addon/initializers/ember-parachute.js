@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import QueryParams from '../query-params';
 import ParachuteEvent from '../-private/parachute-event';
-import lookupController from '../utils/lookup-controller';
 
 const {
   run,
@@ -78,7 +77,7 @@ export function initialize(/* application */) {
      * @returns {any}
      */
     serializeQueryParam(value, urlKey/**, defaultValueType **/) {
-      let controller = lookupController(this);
+      let controller = this.controllerFor(this.routeName);
 
       if (QueryParams.hasParachute(controller)) {
         let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
@@ -101,7 +100,7 @@ export function initialize(/* application */) {
      * @returns {any}
      */
     deserializeQueryParam(value, urlKey/**, defaultValueType **/) {
-      let controller = lookupController(this);
+      let controller = this.controllerFor(this.routeName);
 
       if (QueryParams.hasParachute(controller)) {
         let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
