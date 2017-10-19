@@ -1,6 +1,6 @@
 {
   "name": "ember-parachute",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Improves the experience of working with query params in Ember",
   "keywords": [
     "ember-addon",
