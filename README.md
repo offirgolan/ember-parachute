@@ -10,7 +10,7 @@ query params in Ember. Instead of defining query params in both your route and c
 
 This map is the source of truth for your query params, and will generate a mixin that you can then add into your controller. The mixin adds very helpful properties and methods that makes working with query params a breeze!
 
-One important point about this addon is that it is opinionated about _where_ the data is fetched. In a traditional query params setup, your route is responsible for fetching data in its `model` hook. With this addon, the responsibility moves into the controller. The benefit of this approach is that data fetching no longer blocks your UI from loading, and paves the way for advanced UX such as ["skeleton UI"][skeleton-ui].
+One important point about this addon is that it is opinionated about _where_ the data is fetched. In a traditional query params setup, your route is responsible for fetching data in its `model` hook. With this addon, the responsibility moves into the controller. The benefit of this approach is that data fetching no longer blocks your UI from loading, and paves the way for advanced UX such as ["skeleton loading"][skeleton-loading].
 
 <div style="text-align:center">
   <img src="http://i.imgur.com/COd11eL.png" />
@@ -449,4 +449,4 @@ __NOTE__: Changing the defaultValue at any point will not clear the query parame
 [demo]: https://offirgolan.github.io/ember-parachute
 [ember-metrics]: https://github.com/poteto/ember-metrics
 [ember-qp-docs]: https://guides.emberjs.com/v2.14.0/routing/query-params/
-[skeleton-ui]: https://medium.com/ux-for-india/facilitating-better-interactions-using-skeleton-screens-a034a51120a5
+[skeleton-loading]: https://emberway.io/skeleton-screen-loading-in-ember-js-2f7ac2384d63
