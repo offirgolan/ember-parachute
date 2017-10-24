@@ -26,7 +26,7 @@ export function initialize(/* application */) {
      * @param {Ember.Controller} controller
      * @returns {void}
      */
-    setupController(controller) {
+    setupController(controller, model, transition) {
       this._super(...arguments);
 
       if (QueryParams.hasParachute(controller)) {
@@ -39,8 +39,8 @@ export function initialize(/* application */) {
         event.changed = event.changes;
         event.shouldRefresh = true;
 
-        tryInvoke(controller, 'setup', [event]);
-        sendEvent(controller, 'setup', [event]);
+        tryInvoke(controller, 'setup', [event, transition]);
+        sendEvent(controller, 'setup', [event, transition]);
       }
     },
 
