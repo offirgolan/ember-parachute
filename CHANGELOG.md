@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.3.4
+
+### Pull Requests
+
+- [#44](https://github.com/offirgolan/ember-parachute/pull/44)  Adds transition from setupController to the setup hook  *by [jasonmit](https://github.com/jasonmit)*
+
 ## v0.3.3
 
 ### Pull Requests
