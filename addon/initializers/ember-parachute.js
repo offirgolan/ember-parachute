@@ -16,6 +16,10 @@ const {
 } = Object;
 
 export function initialize(/* application */) {
+  if (Ember.Route._didInitializeParachute) {
+    return;
+  }
+
   Ember.Route.reopen({
     /**
      * Setup the route's `queryParams` map and call the `setup` hook
@@ -176,6 +180,8 @@ export function initialize(/* application */) {
       }
     }
   });
+
+  Ember.Route.reopenClass({ _didInitializeParachute: true })
 }
 
 export default {
