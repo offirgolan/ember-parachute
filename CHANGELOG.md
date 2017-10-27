@@ -1,6 +1,19 @@
 Changelog
 =========
 
+## v0.3.4
+
+### Pull Requests
+
+- [#44](https://github.com/offirgolan/ember-parachute/pull/44)  Adds transition from setupController to the setup hook  *by [jasonmit](https://github.com/jasonmit)*
+
+## v0.3.3
+
+### Pull Requests
+
+- [#37](https://github.com/offirgolan/ember-parachute/pull/37)  Bump ember-getowner-polyfill to v2.0.1  *by [HeroicEric](https://github.com/HeroicEric)*
+- [#42](https://github.com/offirgolan/ember-parachute/pull/42)  Remove obsolete service import  *by [anehx](https://github.com/anehx)*
+
 ## v0.3.2
 
 ### Pull Requests
