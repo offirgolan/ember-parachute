@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.3.5
+
+### Pull Requests
+
+- [#45](https://github.com/offirgolan/ember-parachute/pull/45)  Prevent multiple initializations  *by [anehx](https://github.com/anehx)*
+
 ## v0.3.4
 
 ### Pull Requests
