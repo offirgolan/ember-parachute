@@ -3,7 +3,8 @@ import Ember from 'ember';
 
 const {
   assert,
-  isPresent
+  isPresent,
+  canInvoke
 } = Ember;
 
 /**
@@ -16,8 +17,12 @@ const {
 function queryParamsState(queryParamsArray, controller) {
   return queryParamsArray.reduce((state, qp) => {
     let value = qp.value(controller);
+    let serializedValue = canInvoke(qp, 'serialize') ? qp.serialize(value) : value;
+    let as = qp.as || qp.key;
     state[qp.key] = {
       value,
+      serializedValue,
+      as,
       defaultValue: qp.defaultValue,
       changed: JSON.stringify(value) !== JSON.stringify(qp.defaultValue)
     };

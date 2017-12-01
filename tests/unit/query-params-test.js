@@ -23,13 +23,24 @@ const queryParams = new QueryParams({
   search: {
     defaultValue: '',
     refresh: true
+  },
+  colors: {
+    defaultValue: [],
+    refresh: true,
+    serialize(value) {
+      return value.toString();
+    },
+    deserialize(value = '') {
+      return value.split(',');
+    }
   }
 });
 
 const defaultValues = {
   direction: 'asc',
   page: 1,
-  search: ''
+  search: '',
+  colors: []
 }
 
 const Controller = Ember.Object.extend(queryParams.Mixin);
@@ -139,7 +150,8 @@ test('CP - allQueryParams', function(assert) {
   assert.deepEqual(controller.get('allQueryParams'), {
     direction: 'asc',
     page: 1,
-    search: ''
+    search: '',
+    colors: []
   });
 
   controller.set('page', 2);
@@ -147,17 +159,20 @@ test('CP - allQueryParams', function(assert) {
   assert.deepEqual(controller.get('allQueryParams'), {
     direction: 'asc',
     page: 2,
-    search: ''
+    search: '',
+    colors: []
   });
 });
 
 test('CP - queryParamsState', function(assert) {
-  assert.expect(3);
+  assert.expect(4);
 
   assert.deepEqual(controller.get('queryParamsState.page'), {
     value: 1,
     defaultValue: 1,
-    changed: false
+    changed: false,
+    as: 'page',
+    serializedValue: 1
   });
 
   controller.set('page', 2);
@@ -165,7 +180,9 @@ test('CP - queryParamsState', function(assert) {
   assert.deepEqual(controller.get('queryParamsState.page'), {
     value: 2,
     defaultValue: 1,
-    changed: true
+    changed: true,
+    as: 'page',
+    serializedValue: 2
   });
 
   controller.setDefaultQueryParamValue('page', 2);
@@ -173,6 +190,18 @@ test('CP - queryParamsState', function(assert) {
   assert.deepEqual(controller.get('queryParamsState.page'), {
     value: 2,
     defaultValue: 2,
-    changed: false
+    changed: false,
+    as: 'page',
+    serializedValue: 2
+  });
+
+  controller.set('colors', ['red', 'blue']);
+
+  assert.deepEqual(controller.get('queryParamsState.colors'), {
+    value: ['red', 'blue'],
+    serializedValue: 'red,blue',
+    defaultValue: [],
+    changed: true,
+    as: 'colors'
   });
 });
