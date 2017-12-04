@@ -4,7 +4,8 @@ const {
   get,
   assert,
   isEmpty,
-  isPresent
+  isPresent,
+  canInvoke
 } = Ember;
 
 const {
@@ -59,6 +60,19 @@ export default class QueryParam {
    */
   value(controller) {
     return get(controller, this.key);
+  }
+
+  /**
+   * Current query param serialized value.
+   *
+   * @param {Ember.Controller} controller
+   * @returns {any}
+   *
+   * @memberof QueryParam
+   */
+  serializedValue(controller) {
+    const value = this.value(controller);
+    return canInvoke(this, 'serialize') ? this.serialize(value) : value;
   }
 
   /**
