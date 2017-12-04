@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.3.6
+
+### Pull Requests
+
+- [#47](https://github.com/offirgolan/ember-parachute/pull/47)  Add serialized information to queryParamsState  *by [anehx](https://github.com/anehx)*
+
 ## v0.3.5
 
 ### Pull Requests
