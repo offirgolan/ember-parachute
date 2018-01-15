@@ -72,7 +72,7 @@ export default class QueryParam {
    */
   serializedValue(controller) {
     const value = this.value(controller);
-    return canInvoke(this, 'serialize') ? this.serialize(value) : value;
+    return canInvoke(this, 'serialize') ? this.serialize(value, controller) : value;
   }
 
   /**

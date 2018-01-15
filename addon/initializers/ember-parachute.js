@@ -88,7 +88,7 @@ export function initialize(/* application */) {
         let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
 
         if (canInvoke(queryParam, 'serialize')) {
-          return queryParam.serialize(value);
+          return queryParam.serialize(value, controller);
         }
       }
 
@@ -111,7 +111,7 @@ export function initialize(/* application */) {
         let queryParam = QueryParams.lookupQueryParam(controller, urlKey);
 
         if (canInvoke(queryParam, 'deserialize')) {
-          return queryParam.deserialize(value);
+          return queryParam.deserialize(value, controller);
         }
       }
 
