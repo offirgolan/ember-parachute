@@ -27,10 +27,12 @@ const queryParams = new QueryParams({
   colors: {
     defaultValue: [],
     refresh: true,
-    serialize(value) {
+    serialize(value, controller) {
+      assertController(controller);
       return value.toString();
     },
-    deserialize(value = '') {
+    deserialize(value = '', controller) {
+      assertController(controller);
       return value.split(',');
     }
   }
@@ -45,6 +47,12 @@ const defaultValues = {
 
 const Controller = Ember.Object.extend(queryParams.Mixin);
 let controller;
+
+function assertController(controller) {
+  if (!(controller instanceof Controller)) {
+    throw new Error('Expected the controller to be passed as the second parameter to serialize / deserialize.');
+  }
+}
 
 module('Unit | QueryParams', {
   beforeEach() {
