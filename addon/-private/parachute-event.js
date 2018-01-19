@@ -43,7 +43,7 @@ export default class ParachuteEvent {
      */
     this.changed = queryParamsArray.reduce((changedParams, qp) => {
       if (changedKeys.includes(qp.as)) {
-        changedParams[qp.key] = canInvoke(qp, 'deserialize') ? qp.deserialize(changed[qp.as]) : changed[qp.as];
+        changedParams[qp.key] = canInvoke(qp, 'deserialize') ? qp.deserialize(changed[qp.as], controller) : changed[qp.as];
       }
       return changedParams;
     }, {}, undefined);
