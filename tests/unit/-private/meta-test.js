@@ -67,8 +67,9 @@ test('#queryParamsArray', function(assert) {
     }
   ];
 
-  let meta = new ParachuteMeta(dummyQpMap);
-  assert.propEqual(meta.queryParamsArray, expectedResult);
+  let { queryParamsArray } = new ParachuteMeta(dummyQpMap);
+  assert.propEqual(queryParamsArray.objectAt(0), expectedResult[0]);
+  assert.propEqual(queryParamsArray.objectAt(1), expectedResult[1]);
 });
 
 test('#qpMapForController', function(assert) {
