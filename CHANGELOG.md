@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.3.7
+
+### Pull Requests
+
+- [#50](https://github.com/offirgolan/ember-parachute/pull/50)  feat: pass controller to serialize / deserialize  *by [buschtoens](https://github.com/buschtoens)*
+
 ## v0.3.6
 
 ### Pull Requests
