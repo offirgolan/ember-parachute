@@ -359,6 +359,8 @@ export default Controller.extend(myQueryParams.Mixin, {
 });
 ```
 
+> Note: If you've overridden your route's `setupController`, you must use `this._super(...arguments);` in `setupController` for the `setup` hook to fire.
+
 ### Hook - `reset`
 
 ```ts
@@ -374,6 +376,8 @@ export default Controller.extend(myQueryParams.Mixin, {
   }
 });
 ```
+
+> Note: If you've overridden your route's `resetController`, you must use `this._super(...arguments);` in `resetController` for the `reset` hook to fire.
 
 ### Events
 
