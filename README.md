@@ -42,7 +42,7 @@ import QueryParams from 'ember-parachute';
 export const myQueryParams = new QueryParams({
   parachuteOpen: {
     as: 'parachute',
-    defaultValue: true,
+    defaultValue: true
   },
   page: {
     defaultValue: 1,
