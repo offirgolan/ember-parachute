@@ -434,6 +434,8 @@ export default Ember.Controller.extend(myQueryParams.Mixin, {
 {{/button}}
 ```
 
+> Note: This method works well in conjunction with `setDefaultQueryParamValue`.
+
 ### Function - `setDefaultQueryParamValue`
 
 ```ts
@@ -446,6 +448,8 @@ Set the default value for a given param. An example where this is useful is wher
 controller.setDefaultQueryParamValue('search', 'foo');
 controller.setDefaultQueryParamValue('direction', 'asc');
 ```
+
+If you set a new default value after the existing default has been promoted to the value, like when calling `setDefaultQueryParamValue` in the `setup` hook, you need to call `resetQueryParams` to apply those new defaults as the values. You can do this for all QPs or for a single one via `resetQueryParams(['nameOfQp'])`.
 
 __NOTE__: Changing the defaultValue at any point will not clear the query parameter from being shown in the URI. We do not have control over that as it is private API.
 
