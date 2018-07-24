@@ -29,7 +29,15 @@ export default class ParachuteEvent {
   constructor(routeName, controller, changed = {}) {
     let { queryParams, queryParamsArray } = QueryParams.metaFor(controller);
     let state = QueryParams.stateFor(controller);
-    let changedKeys = emberArray(keys(changed));
+    let changedKeys = emberArray([]);
+
+    const changes = {};
+    for (const [key, qpState] of Object.entries(state)) {
+      if (qpState.changed || key in changed) {
+          changedKeys.pushObject(key);
+          changes[key] = changed[key] || qpState.serializedValue;
+      }
+    }
 
     /**
      * The route the event was fired from
@@ -43,7 +51,7 @@ export default class ParachuteEvent {
      */
     this.changed = queryParamsArray.reduce((changedParams, qp) => {
       if (changedKeys.includes(qp.as)) {
-        changedParams[qp.key] = canInvoke(qp, 'deserialize') ? qp.deserialize(changed[qp.as], controller) : changed[qp.as];
+        changedParams[qp.key] = canInvoke(qp, 'deserialize') ? qp.deserialize(changes[qp.as], controller) : changes[qp.as];
       }
       return changedParams;
     }, {}, undefined);
