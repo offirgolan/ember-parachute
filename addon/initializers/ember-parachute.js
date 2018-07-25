@@ -4,6 +4,7 @@ import ParachuteEvent from '../-private/parachute-event';
 import lookupController from '../utils/lookup-controller';
 
 const {
+  RSVP,
   run,
   assign,
   canInvoke,
@@ -70,6 +71,25 @@ export function initialize(/* application */) {
         tryInvoke(controller, 'reset', [event, isExiting]);
         sendEvent(controller, 'reset', [event, isExiting]);
       }
+    },
+
+    /**
+     * For Engines support. `transition.handlerInfos` is used to compute
+     * the query params that will be injected into a controller. In lazily
+     * loaded engines, handlerInfos maybe promises that don't contain the required
+     * information. Resolve them here to guarantee parachute can properly function.
+     *
+     * @method deserialize
+     * @param {Object} params the parameters extracted from the URL
+     * @param {Transition} transition
+     * @returns {Promise<any>} The model for this route
+     */
+    async deserialize(params, transition) {
+      await RSVP.all(
+        transition.handlerInfos.map(x => x.handlerPromise)
+      );
+
+      return this._super(params, transition);
     },
 
     /**
