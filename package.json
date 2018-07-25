@@ -16,6 +16,7 @@
     "doc": "doc",
     "test": "tests"
   },
+  "types": "index.d.ts",
   "repository": "https://github.com/offirgolan/ember-parachute",
   "bugs": "https://github.com/offirgolan/ember-parachute/issues",
   "homepage": "https://github.com/offirgolan/ember-parachute",
