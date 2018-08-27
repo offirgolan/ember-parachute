@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/offirgolan/ember-parachute.svg?branch=master)](https://travis-ci.org/offirgolan/ember-parachute)
 [![npm version](https://badge.fury.io/js/ember-parachute.svg)](http://badge.fury.io/js/ember-parachute)
+[![Ember Observer Score](http://emberobserver.com/badges/ember-parachute.svg)](http://emberobserver.com/addons/ember-parachute)
 
 ## <img src="https://i.imgur.com/HaN5cCc.png" alt="ember-parachute" width="30"> Philosophy
 
