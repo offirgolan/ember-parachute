@@ -92,9 +92,14 @@ export function initialize(/* application */) {
           return this._super(params, transition);
       }
 
+      // Save and bind the refence to the super here
+      // as this._super doesn't work in callbacks
+      // https://github.com/emberjs/ember.js/issues/15291
+      const actualSuper = this._super.bind(this);
+
       return RSVP.all(
         transition.handlerInfos.map(x => x.handlerPromise)
-      ).then(() => this._super(params, transition));
+      ).then(() => actualSuper(params, transition));
     },
 
     /**
