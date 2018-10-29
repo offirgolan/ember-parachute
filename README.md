@@ -13,10 +13,6 @@ This map is the source of truth for your query params, and will generate a mixin
 
 One important point about this addon is that it is opinionated about _where_ the data is fetched. In a traditional query params setup, your route is responsible for fetching data in its `model` hook. With this addon, the responsibility moves into the controller. The benefit of this approach is that data fetching no longer blocks your UI from loading, and paves the way for advanced UX such as ["skeleton loading"][skeleton-loading].
 
-<div style="text-align:center">
-  <img src="http://i.imgur.com/COd11eL.png" />
-</div>
-
 ## Installation
 
 ```
