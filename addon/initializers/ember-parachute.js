@@ -4,6 +4,7 @@ import ParachuteEvent from '../-private/parachute-event';
 import lookupController from '../utils/lookup-controller';
 
 const {
+  RSVP,
   run,
   assign,
   canInvoke,
@@ -70,6 +71,35 @@ export function initialize(/* application */) {
         tryInvoke(controller, 'reset', [event, isExiting]);
         sendEvent(controller, 'reset', [event, isExiting]);
       }
+    },
+
+    /**
+     * For Engines support. `transition.handlerInfos` is used to compute
+     * the query params that will be injected into a controller. In lazily
+     * loaded engines, handlerInfos may be promises that don't contain the required
+     * information. Resolve them here to guarantee parachute can properly function.
+     *
+     * @method deserialize
+     * @param {Object} params the parameters extracted from the URL
+     * @param {Transition} transition
+     * @returns {Promise<any>} The model for this route
+     */
+    deserialize(params, transition) {
+      // Check if handlers have already been loaded.
+      // If so, don't return a promise as it will result in
+      // the loading screen/state flashing.
+      if (!transition.handlerInfos.find(x => !x.handler)) {
+          return this._super(params, transition);
+      }
+
+      // Save and bind the refence to the super here
+      // as this._super doesn't work in callbacks
+      // https://github.com/emberjs/ember.js/issues/15291
+      const actualSuper = this._super.bind(this);
+
+      return RSVP.all(
+        transition.handlerInfos.map(x => x.handlerPromise)
+      ).then(() => actualSuper(params, transition));
     },
 
     /**
