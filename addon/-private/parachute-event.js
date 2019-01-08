@@ -1,9 +1,9 @@
+import { A as emberArray } from '@ember/array';
 import Ember from 'ember';
 import QueryParams from '../query-params';
 
 const {
-  canInvoke,
-  A: emberArray
+  canInvoke
 } = Ember;
 
 const {

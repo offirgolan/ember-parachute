@@ -1,11 +1,8 @@
-import Ember from 'ember';
+import { or } from '@ember/object/computed';
+import Controller from '@ember/controller';
+import { A as emberArray } from '@ember/array';
 import QueryParams from 'ember-parachute';
 import { task, timeout } from 'ember-concurrency';
-
-const {
-  computed,
-  A: emberArray
-} = Ember;
 
 const queryParams = new QueryParams({
   parachuteOpen: {
@@ -38,8 +35,8 @@ const queryParams = new QueryParams({
   }
 });
 
-export default Ember.Controller.extend(queryParams.Mixin, {
-  queryParamsChanged: computed.or('queryParamsState.{page,search,tags}.changed'),
+export default Controller.extend(queryParams.Mixin, {
+  queryParamsChanged: or('queryParamsState.{page,search,tags}.changed'),
 
   setup({ queryParams }) {
     if (queryParams.parachuteOpen) {

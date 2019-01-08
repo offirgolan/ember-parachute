@@ -1,9 +1,5 @@
-import Ember from 'ember';
+import { A as emberArray } from '@ember/array';
 import QueryParam from './query-param';
-
-const {
-  A: emberArray
-} = Ember;
 
 const {
   keys

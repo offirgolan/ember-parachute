@@ -1,18 +1,14 @@
+import Mixin from '@ember/object/mixin';
+import { assign } from '@ember/polyfills';
+import { assert } from '@ember/debug';
+import { isPresent, isEmpty } from '@ember/utils';
+import { setProperties, computed, set, get } from '@ember/object';
 import Ember from 'ember';
 import { HAS_PARACHUTE, PARACHUTE_META } from './-private/symbols';
 import ParachuteMeta from './-private/parachute-meta';
 import queryParamsStateFor from './-private/state';
 
 const {
-  get,
-  set,
-  Mixin,
-  assign,
-  assert,
-  isEmpty,
-  computed,
-  isPresent,
-  setProperties,
   NAME_KEY
 } = Ember;
 

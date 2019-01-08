@@ -1,15 +1,16 @@
+import Route from '@ember/routing/route';
+import RSVP from 'rsvp';
+import { run } from '@ember/runloop';
+import { assign } from '@ember/polyfills';
+import { tryInvoke } from '@ember/utils';
+import { sendEvent } from '@ember/object/events';
 import Ember from 'ember';
 import QueryParams from '../query-params';
 import ParachuteEvent from '../-private/parachute-event';
 import lookupController from '../utils/lookup-controller';
 
 const {
-  RSVP,
-  run,
-  assign,
-  canInvoke,
-  tryInvoke,
-  sendEvent
+  canInvoke
 } = Ember;
 
 const {
@@ -17,11 +18,11 @@ const {
 } = Object;
 
 export function initialize(/* application */) {
-  if (Ember.Route._didInitializeParachute) {
+  if (Route._didInitializeParachute) {
     return;
   }
 
-  Ember.Route.reopen({
+  Route.reopen({
     /**
      * Setup the route's `queryParams` map and call the `setup` hook
      * on the controller.
@@ -211,7 +212,7 @@ export function initialize(/* application */) {
     }
   });
 
-  Ember.Route.reopenClass({ _didInitializeParachute: true })
+  Route.reopenClass({ _didInitializeParachute: true })
 }
 
 export default {

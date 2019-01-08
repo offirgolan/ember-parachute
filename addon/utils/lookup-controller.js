@@ -1,6 +1,5 @@
-import Ember from 'ember';
-
-const { get, getOwner } = Ember;
+import { get } from '@ember/object';
+import { getOwner } from '@ember/application';
 
 /**
  * Lookup controller on route.

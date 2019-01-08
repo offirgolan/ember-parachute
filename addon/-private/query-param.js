@@ -1,10 +1,9 @@
+import { get } from '@ember/object';
+import { assert } from '@ember/debug';
+import { isPresent, isEmpty } from '@ember/utils';
 import Ember from 'ember';
 
 const {
-  get,
-  assert,
-  isEmpty,
-  isPresent,
   canInvoke
 } = Ember;
 

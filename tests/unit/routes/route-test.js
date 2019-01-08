@@ -1,14 +1,12 @@
-import Ember from 'ember';
+import Controller from '@ember/controller';
+import EmberRoute from '@ember/routing/route';
+import { on } from '@ember/object/evented';
+import { run } from '@ember/runloop';
 import QueryParams from 'ember-parachute';
 import ParachuteEvent from 'ember-parachute/-private/parachute-event';
 import { module, test } from 'qunit';
 import destroyApp from '../../helpers/destroy-app';
 import startApp from '../../helpers/start-app';
-
-const {
-  on,
-  run
-} = Ember;
 
 const queryParams = new QueryParams({
   direction: {
@@ -27,104 +25,103 @@ const queryParams = new QueryParams({
   }
 });
 
-const EmberRoute = Ember.Route;
-const Controller = Ember.Controller.extend(queryParams.Mixin);
+const Controller = Controller.extend(queryParams.Mixin);
 let route;
 
-module('Unit | Route', {
-  beforeEach() {
-    Ember.Route = Ember.Route.extend();
+module('Unit | Route', function(hooks) {
+  hooks.beforeEach(function() {
+    EmberRoute = EmberRoute.extend();
 
     run(() => {
       this.application = startApp();
-      this.application.register('route:foo', Ember.Route.extend());
+      this.application.register('route:foo', EmberRoute.extend());
 
       this.appInstance = this.application.buildInstance();
       this.appInstance.boot();
 
       route = this.appInstance.lookup('route:foo');
     });
-  },
+  });
 
-  afterEach() {
+  hooks.afterEach(function() {
     run(this.appInstance, 'destroy');
     destroyApp(this.application);
-    Ember.Route = EmberRoute;
-  }
-});
-
-test('#setup', function(assert) {
-  assert.expect(2);
-
-  let controller = Controller.extend({
-    setup(event) {
-      assert.ok(event instanceof ParachuteEvent);
-    },
-
-    onSetup: on('setup', function(event) {
-      assert.ok(event instanceof ParachuteEvent);
-    })
-  }).create();
-
-
-  route.setupController(controller);
-});
-
-test('#reset', function(assert) {
-  assert.expect(4);
-
-  let controller = Controller.extend({
-    reset(event, isExiting) {
-      assert.ok(event instanceof ParachuteEvent);
-      assert.equal(typeof isExiting, 'boolean');
-    },
-
-    onReset: on('reset', function(event, isExiting) {
-      assert.ok(event instanceof ParachuteEvent);
-      assert.equal(typeof isExiting, 'boolean');
-    })
-  }).create();
-
-  route.resetController(controller, true);
-});
-
-test('#queryParamsDidChange', function(assert) {
-  assert.expect(2);
-
-  let controller = Controller.extend({
-    queryParamsDidChange(event) {
-      assert.ok(event instanceof ParachuteEvent);
-    },
-
-    onReset: on('queryParamsDidChange', function(event) {
-      assert.ok(event instanceof ParachuteEvent);
-    })
-  }).create();
-
-  route.setProperties({
-    routeName: 'foo',
-    controller
-  })
-
-  Ember.run(() => {
-    route.send('queryParamsDidChange', {}, {}, {});
-  });
-});
-
-test('route queryParams map', function(assert) {
-  assert.expect(1);
-
-  let controller = Controller.create();
-
-  route.set('queryParams', {
-    search: { refreshModel: true }
+    EmberRoute = EmberRoute;
   });
 
-  route.setupController(controller);
+  test('#setup', function(assert) {
+    assert.expect(2);
 
-  assert.propEqual(route.get('queryParams'), {
-    direction: { replace: false },
-    page: { replace: true },
-    search: { replace: false, refreshModel: true }
+    let controller = Controller.extend({
+      setup(event) {
+        assert.ok(event instanceof ParachuteEvent);
+      },
+
+      onSetup: on('setup', function(event) {
+        assert.ok(event instanceof ParachuteEvent);
+      })
+    }).create();
+
+
+    route.setupController(controller);
+  });
+
+  test('#reset', function(assert) {
+    assert.expect(4);
+
+    let controller = Controller.extend({
+      reset(event, isExiting) {
+        assert.ok(event instanceof ParachuteEvent);
+        assert.equal(typeof isExiting, 'boolean');
+      },
+
+      onReset: on('reset', function(event, isExiting) {
+        assert.ok(event instanceof ParachuteEvent);
+        assert.equal(typeof isExiting, 'boolean');
+      })
+    }).create();
+
+    route.resetController(controller, true);
+  });
+
+  test('#queryParamsDidChange', function(assert) {
+    assert.expect(2);
+
+    let controller = Controller.extend({
+      queryParamsDidChange(event) {
+        assert.ok(event instanceof ParachuteEvent);
+      },
+
+      onReset: on('queryParamsDidChange', function(event) {
+        assert.ok(event instanceof ParachuteEvent);
+      })
+    }).create();
+
+    route.setProperties({
+      routeName: 'foo',
+      controller
+    })
+
+    run(() => {
+      route.send('queryParamsDidChange', {}, {}, {});
+    });
+  });
+
+  test('route queryParams map', function(assert) {
+    assert.expect(1);
+
+    let controller = Controller.create();
+
+    route.set('queryParams', {
+      search: { refreshModel: true }
+    });
+
+    route.setupController(controller);
+
+    assert.propEqual(route.get('queryParams'), {
+      direction: { replace: false },
+      page: { replace: true },
+      search: { replace: false, refreshModel: true }
+    });
   });
 });

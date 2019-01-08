@@ -1,10 +1,6 @@
+import { assert } from '@ember/debug';
+import { isPresent } from '@ember/utils';
 import QueryParams from '../query-params';
-import Ember from 'ember';
-
-const {
-  assert,
-  isPresent
-} = Ember;
 
 /**
  * Creates QueryParamsState interface.
