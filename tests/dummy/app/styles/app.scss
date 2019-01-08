@@ -1,8 +1,8 @@
-$primary: "red";
-$accent: "red";
+$primary: 'red';
+$accent: 'red';
 
-@import "ember-paper";
-@import "./sky";
+@import 'ember-paper';
+@import './sky';
 
 html,
 body,
@@ -14,7 +14,7 @@ body > div.ember-view {
 
 body {
   background-image: linear-gradient(0deg, #292367 0%, #0e4577 100%);
-  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -24,7 +24,7 @@ body {
 }
 
 .text-primary {
-  color: color($primary, '500');
+  color: paper-color($primary, '500');
 }
 
 .box-container {
@@ -58,14 +58,14 @@ body {
     transition: all ease-out 0.75s;
     padding: 0 10px;
     z-index: 1;
-    box-shadow: -3px -3px 5px 0px rgba(0,0,0,0.5);
+    box-shadow: -3px -3px 5px 0px rgba(0, 0, 0, 0.5);
 
     .title {
       font-family: 'Pacifico', cursive;
       margin: 0;
       font-weight: 400;
       font-size: 34px;
-      color: color($color-grey, '800');
+      color: paper-color($color-grey, '800');
     }
 
     .box-content {
@@ -120,12 +120,12 @@ body {
   position: absolute;
   bottom: 100px;
   right: 20px;
-  background-color: color($color-blue-grey, '500') !important;
+  background-color: paper-color($color-blue-grey, '500') !important;
   color: white;
 }
 
 .help-dialog-header {
-  background-color: color($color-blue-grey, '500');
+  background-color: paper-color($color-blue-grey, '500');
 }
 
 @keyframes rotating {

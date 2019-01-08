@@ -3,9 +3,7 @@ import { assign } from '@ember/polyfills';
 import QueryParams from 'ember-parachute';
 import { module, test } from 'qunit';
 
-const {
-  keys
-} = Object;
+const { keys } = Object;
 
 const queryParams = new QueryParams({
   direction: {
@@ -40,14 +38,16 @@ const defaultValues = {
   page: 1,
   search: '',
   colors: []
-}
+};
 
 const Controller = EmberObject.extend(queryParams.Mixin);
 let controller;
 
 function assertController(controller) {
   if (!(controller instanceof Controller)) {
-    throw new Error('Expected the controller to be passed as the second parameter to serialize / deserialize.');
+    throw new Error(
+      'Expected the controller to be passed as the second parameter to serialize / deserialize.'
+    );
   }
 }
 
@@ -68,13 +68,21 @@ module('Unit | QueryParams', function(hooks) {
 
     let QP, controller, queryParams;
 
-    QP = new QueryParams({ foo: { defaultValue: 1 } }, { bar: { defaultValue: 1 } }, { baz: { defaultValue: 1 } });
+    QP = new QueryParams(
+      { foo: { defaultValue: 1 } },
+      { bar: { defaultValue: 1 } },
+      { baz: { defaultValue: 1 } }
+    );
     controller = EmberObject.extend(QP.Mixin).create();
     queryParams = QueryParams.metaFor(controller).queryParams;
 
     assert.deepEqual(keys(queryParams), ['foo', 'bar', 'baz']);
 
-    QP = new QueryParams({ foo: { defaultValue: 1 } }, { bar: { defaultValue: 1 } }, { bar: { defaultValue: undefined } });
+    QP = new QueryParams(
+      { foo: { defaultValue: 1 } },
+      { bar: { defaultValue: 1 } },
+      { bar: { defaultValue: undefined } }
+    );
     controller = EmberObject.extend(QP.Mixin).create();
     queryParams = QueryParams.metaFor(controller).queryParams;
 
@@ -85,6 +93,8 @@ module('Unit | QueryParams', function(hooks) {
     assert.expect(1);
 
     let QP = new QueryParams({ foo: { defaultValue: 1 } });
+
+    // eslint-disable-next-line ember/avoid-leaking-state-in-ember-objects
     QP = QP.extend({ bar: { defaultValue: 1 } }, { baz: { defaultValue: 1 } });
 
     assert.deepEqual(keys(QP.queryParams), ['foo', 'bar', 'baz']);
@@ -130,7 +140,10 @@ module('Unit | QueryParams', function(hooks) {
     let changes = { page: 2, direction: 'desc' };
 
     controller.setProperties(changes);
-    assert.deepEqual(controller.get('allQueryParams'), assign({}, defaultValues, changes));
+    assert.deepEqual(
+      controller.get('allQueryParams'),
+      assign({}, defaultValues, changes)
+    );
 
     controller.resetQueryParams();
     assert.deepEqual(controller.get('allQueryParams'), defaultValues);
@@ -142,10 +155,16 @@ module('Unit | QueryParams', function(hooks) {
     let changes = { page: 2, direction: 'desc', search: 'date' };
 
     controller.setProperties(changes);
-    assert.deepEqual(controller.get('allQueryParams'), assign({}, defaultValues, changes));
+    assert.deepEqual(
+      controller.get('allQueryParams'),
+      assign({}, defaultValues, changes)
+    );
 
     controller.resetQueryParams(['search', 'page']);
-    assert.deepEqual(controller.get('allQueryParams'), assign(defaultValues, { direction: 'desc' }));
+    assert.deepEqual(
+      controller.get('allQueryParams'),
+      assign(defaultValues, { direction: 'desc' })
+    );
   });
 
   test('CP - allQueryParams', function(assert) {

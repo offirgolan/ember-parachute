@@ -16,25 +16,25 @@ module('Unit | Implementation | meta', function() {
 
   test('#queryParams', function(assert) {
     let expectedResult = {
-      'bar': {
-        'as': 'BAR',
-        'defaultValue': 1,
-        'deserialize': undefined,
-        'key': 'bar',
-        'refresh': false,
-        'replace': true,
-        'scope': undefined,
-        'serialize': undefined
+      bar: {
+        as: 'BAR',
+        defaultValue: 1,
+        deserialize: undefined,
+        key: 'bar',
+        refresh: false,
+        replace: true,
+        scope: undefined,
+        serialize: undefined
       },
-      'foo': {
-        'as': 'foo',
-        'defaultValue': 'foo',
-        'deserialize': undefined,
-        'key': 'foo',
-        'refresh': true,
-        'replace': false,
-        'scope': undefined,
-        'serialize': undefined
+      foo: {
+        as: 'foo',
+        defaultValue: 'foo',
+        deserialize: undefined,
+        key: 'foo',
+        refresh: true,
+        replace: false,
+        scope: undefined,
+        serialize: undefined
       }
     };
 
@@ -45,24 +45,24 @@ module('Unit | Implementation | meta', function() {
   test('#queryParamsArray', function(assert) {
     let expectedResult = [
       {
-        'as': 'foo',
-        'defaultValue': 'foo',
-        'deserialize': undefined,
-        'key': 'foo',
-        'refresh': true,
-        'replace': false,
-        'scope': undefined,
-        'serialize': undefined
+        as: 'foo',
+        defaultValue: 'foo',
+        deserialize: undefined,
+        key: 'foo',
+        refresh: true,
+        replace: false,
+        scope: undefined,
+        serialize: undefined
       },
       {
-        'as': 'BAR',
-        'defaultValue': 1,
-        'deserialize': undefined,
-        'key': 'bar',
-        'refresh': false,
-        'replace': true,
-        'scope': undefined,
-        'serialize': undefined
+        as: 'BAR',
+        defaultValue: 1,
+        deserialize: undefined,
+        key: 'bar',
+        refresh: false,
+        replace: true,
+        scope: undefined,
+        serialize: undefined
       }
     ];
 
@@ -74,12 +74,12 @@ module('Unit | Implementation | meta', function() {
   test('#qpMapForController', function(assert) {
     let expectedResult = {
       foo: {
-        'as': 'foo',
-        'scope': undefined
+        as: 'foo',
+        scope: undefined
       },
       bar: {
-        'as': 'BAR',
-        'scope': undefined
+        as: 'BAR',
+        scope: undefined
       }
     };
 
@@ -90,10 +90,10 @@ module('Unit | Implementation | meta', function() {
   test('#qpMapForRoute', function(assert) {
     let expectedResult = {
       foo: {
-        'replace': false
+        replace: false
       },
       bar: {
-        'replace': true
+        replace: true
       }
     };
 

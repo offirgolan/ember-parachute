@@ -1,47 +1,51 @@
-<div class="box-container {{if parachuteOpen 'has-parachute'}}">
+<div class="box-container {{if parachuteOpen "has-parachute"}}">
   <img src="images/parachute.svg" alt="" class="parachute" ondragstart="return false;">
 
   {{#paper-card class="box" as |card|}}
     {{#if fetchModel.isRunning}}
-     {{paper-progress-linear class="loading"}}
-   {{/if}}
+      {{paper-progress-linear class="loading"}}
+    {{/if}}
 
-   {{#card.title class="layout-column" as |title|}}
-     <div class="layout-row">
-       <div class="layout-column flex-30">
-         <h1 class="title">Parachute</h1>
-       </div>
-       <div class="layout-column flex-70 layout-align-end-end">
-         {{#paper-switch value=parachuteOpen onChange=(action (mut parachuteOpen)) noink=true}}
-           {{if parachuteOpen 'Open' 'Closed'}}
-         {{/paper-switch}}
-       </div>
-     </div>
-  {{/card.title}}
+    {{#card.title class="layout-column"}}
+      <div class="layout-row">
+        <div class="layout-column flex-30">
+          <h1 class="title">Parachute</h1>
+        </div>
+        <div class="layout-column flex-70 layout-align-end-end">
+          {{#paper-switch value=parachuteOpen onChange=(action (mut parachuteOpen)) noink=true}}
+            {{if parachuteOpen "Open" "Closed"}}
+          {{/paper-switch}}
+        </div>
+      </div>
+    {{/card.title}}
 
-   {{#card.content class="layout-column box-content"}}
-     <div class="layout-row">
-       <div class="layout-column flex-100">
-         {{paper-input label="Search" value=search onChange=(action (mut search))}}
-       </div>
-     </div>
+    {{#card.content class="layout-column box-content"}}
+      <div class="layout-row">
+        <div class="layout-column flex-100">
+          {{paper-input label="Search" value=search onChange=(action (mut search))}}
+        </div>
+      </div>
 
-     <div class="layout-row">
-       <div class="layout-column flex-100">
-         {{paper-input type="number" label="Page" value=page onChange=(action (mut page))}}
-       </div>
-     </div>
+      <div class="layout-row">
+        <div class="layout-column flex-100">
+          {{paper-input type="number" label="Page" value=page onChange=(action (mut page))}}
+        </div>
+      </div>
 
-     <div class="layout-row">
-       <div class="layout-column flex-100">
-         {{paper-chips content=tags removeItem=(action "removeTag") addItem=(action "addTag") placeholder="Add a tag"}}
-       </div>
-     </div>
-   {{/card.content}}
+      <div class="layout-row">
+        <div class="layout-column flex-100">
+          {{paper-chips content=tags removeItem=(action "removeTag") addItem=(action "addTag") placeholder="Add a tag"}}
+        </div>
+      </div>
+    {{/card.content}}
 
     {{#card.actions class="box-actions"}}
-      {{#paper-button raised=true class="flex-50" onClick=(action 'setDefaults') disabled=(or (not queryParamsChanged) (not parachuteOpen))}}Set as Defaults{{/paper-button}}
-      {{#paper-button raised=true primary=true onClick=(action "resetAll") class="flex-50" disabled=(or (not queryParamsChanged) (not parachuteOpen))}}Reset All{{/paper-button}}
+      {{#paper-button raised=true class="flex-50" onClick=(action "setDefaults") disabled=(or (not queryParamsChanged) (not parachuteOpen))}}
+        Set as Defaults
+      {{/paper-button}}
+      {{#paper-button raised=true primary=true onClick=(action "resetAll") class="flex-50" disabled=(or (not queryParamsChanged) (not parachuteOpen))}}
+        Reset All
+      {{/paper-button}}
     {{/card.actions}}
-   {{/paper-card}}
+  {{/paper-card}}
 </div>

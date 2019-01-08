@@ -1,12 +1,11 @@
 import Controller from '@ember/controller';
-import EmberRoute from '@ember/routing/route';
+import Route from '@ember/routing/route';
 import { on } from '@ember/object/evented';
 import { run } from '@ember/runloop';
 import QueryParams from 'ember-parachute';
 import ParachuteEvent from 'ember-parachute/-private/parachute-event';
 import { module, test } from 'qunit';
-import destroyApp from '../../helpers/destroy-app';
-import startApp from '../../helpers/start-app';
+import { setupTest } from 'ember-qunit';
 
 const queryParams = new QueryParams({
   direction: {
@@ -25,34 +24,23 @@ const queryParams = new QueryParams({
   }
 });
 
-const Controller = Controller.extend(queryParams.Mixin);
+const QPController = Controller.extend(queryParams.Mixin);
 let route;
 
 module('Unit | Route', function(hooks) {
+  setupTest(hooks);
+
   hooks.beforeEach(function() {
-    EmberRoute = EmberRoute.extend();
-
     run(() => {
-      this.application = startApp();
-      this.application.register('route:foo', EmberRoute.extend());
-
-      this.appInstance = this.application.buildInstance();
-      this.appInstance.boot();
-
-      route = this.appInstance.lookup('route:foo');
+      this.owner.register('route:foo', Route.extend());
+      route = this.owner.lookup('route:foo');
     });
-  });
-
-  hooks.afterEach(function() {
-    run(this.appInstance, 'destroy');
-    destroyApp(this.application);
-    EmberRoute = EmberRoute;
   });
 
   test('#setup', function(assert) {
     assert.expect(2);
 
-    let controller = Controller.extend({
+    let controller = QPController.extend({
       setup(event) {
         assert.ok(event instanceof ParachuteEvent);
       },
@@ -62,14 +50,13 @@ module('Unit | Route', function(hooks) {
       })
     }).create();
 
-
     route.setupController(controller);
   });
 
   test('#reset', function(assert) {
     assert.expect(4);
 
-    let controller = Controller.extend({
+    let controller = QPController.extend({
       reset(event, isExiting) {
         assert.ok(event instanceof ParachuteEvent);
         assert.equal(typeof isExiting, 'boolean');
@@ -87,7 +74,7 @@ module('Unit | Route', function(hooks) {
   test('#queryParamsDidChange', function(assert) {
     assert.expect(2);
 
-    let controller = Controller.extend({
+    let controller = QPController.extend({
       queryParamsDidChange(event) {
         assert.ok(event instanceof ParachuteEvent);
       },
@@ -100,7 +87,7 @@ module('Unit | Route', function(hooks) {
     route.setProperties({
       routeName: 'foo',
       controller
-    })
+    });
 
     run(() => {
       route.send('queryParamsDidChange', {}, {}, {});
@@ -110,7 +97,7 @@ module('Unit | Route', function(hooks) {
   test('route queryParams map', function(assert) {
     assert.expect(1);
 
-    let controller = Controller.create();
+    let controller = QPController.create();
 
     route.set('queryParams', {
       search: { refreshModel: true }
