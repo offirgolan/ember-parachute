@@ -3,30 +3,38 @@ import {
   getQueryParamsFor
 } from './-private/query-params-for';
 
-export default function queryParam(qpDefinition) {
-  return desc => {
-    qpDefinition = qpDefinition || {};
+function createDescriptor(desc, qpDefinition) {
+  qpDefinition = qpDefinition || {};
 
-    const descriptor = {
-      ...desc,
-      finisher(klass) {
-        addQueryParamFor(klass, desc.key, qpDefinition);
-        klass.reopen(getQueryParamsFor(klass).Mixin);
+  const descriptor = {
+    ...desc,
+    finisher(klass) {
+      addQueryParamFor(klass, desc.key, qpDefinition);
+      klass.reopen(getQueryParamsFor(klass).Mixin);
 
-        return klass;
-      }
-    };
+      return klass;
+    }
+  };
 
-    if (desc.kind === 'field') {
-      if (typeof desc.initializer === 'function') {
-        qpDefinition.defaultValue = desc.initializer();
-      }
-
-      descriptor.initializer = function initializer() {
-        return qpDefinition.defaultValue;
-      };
+  if (desc.kind === 'field') {
+    if (typeof desc.initializer === 'function') {
+      qpDefinition.defaultValue = desc.initializer();
     }
 
-    return descriptor;
-  };
+    descriptor.initializer = function initializer() {
+      return qpDefinition.defaultValue;
+    };
+  }
+
+  return descriptor;
+}
+
+export default function queryParam(qpDefinition) {
+  // Handle `@queryParam` usage
+  if (`${qpDefinition}` === '[object Descriptor]') {
+    return createDescriptor(qpDefinition);
+  }
+
+  // Handle `@queryParam()` usage
+  return desc => createDescriptor(desc, qpDefinition);
 }

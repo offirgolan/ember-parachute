@@ -33,9 +33,9 @@ If it is a bug [please open an issue on GitHub](http://github.com/offirgolan/emb
 The source of truth for your application's query params are query param maps. First, define one in your controller:
 
 ```js
-// controllers/my-route.js
-import Ember from 'ember';
+import Controller from '@ember/controller';
 import QueryParams from 'ember-parachute';
+import { or } from '@ember/object/computed';
 
 export const myQueryParams = new QueryParams({
   parachuteOpen: {
@@ -62,10 +62,8 @@ export const myQueryParams = new QueryParams({
   }
 });
 
-export default Ember.Controller.extend(myQueryParams.Mixin, {
-  queryParamsChanged: Ember.computed.or(
-    'queryParamsState.{page,search,tags}.changed'
-  ),
+export default Controller.extend(myQueryParams.Mixin, {
+  queryParamsChanged: or('queryParamsState.{page,search,tags}.changed'),
 
   setup({ queryParams }) {
     this.fetchData(queryParams);
@@ -100,6 +98,60 @@ export default Ember.Controller.extend(myQueryParams.Mixin, {
 In the above example, the mixin adds the `setup`, `reset`, and `queryParamsDidChange` hooks. You can use these hooks to perform tasks like fetching data based on the query params or resetting them when leaving the route. Additionally, you can create a computed property observing `queryParamsState` that will allow you to display a button in your UI that can clear all query params via `resetQueryParams`.
 
 Please continue reading for more advanced usage.
+
+## Decorators
+
+This package provides some decorators in order to use ember-parachute with the now supported class syntax.
+
+### `queryParam`
+
+```js
+import Controller from '@ember/controller';
+import { queryParam } from 'ember-parachute/decorators';
+
+export default class MyController extends Controller {
+  @queryParam({
+    as: 'parachute',
+    serialize(value) {
+      return value ? 'open' : 'closed';
+    },
+    deserialize(value) {
+      return value === 'open' ? true : false;
+    }
+  })
+  parachuteOpen = true;
+
+  @queryParam({ refresh: true, replace: true }) page = 1;
+
+  @queryParam({ refresh: true }) search = '';
+
+  @queryParam({
+    refresh: true,
+    serialize(value = '') {
+      return value.toString();
+    },
+    deserialize(value = '') {
+      return value.split(',');
+    }
+  })
+  tags = ['Ember', 'Parachute'];
+}
+```
+
+### `withParachute`
+
+If you're not using any query params but still want the `setup` and `reset` hooks, you can use the `withParachute` class decorator.
+
+```js
+import Controller from '@ember/controller';
+import { withParachute } from 'ember-parachute/decorators';
+
+@withParachute
+export default class MyController extends Controller {
+  setup() {}
+  reset() {}
+}
+```
 
 ## Query Param Map
 
@@ -267,7 +319,7 @@ const myQueryParams = new QueryParams({
   /* ... */
 });
 
-export default Ember.Controller.extend(myQueryParams.Mixin, {
+export default Controller.extend(myQueryParams.Mixin, {
   // ...
 });
 ```
@@ -295,9 +347,7 @@ controller.get('queryParamsState.page'); // { value: 2, defaultValue: 1, changed
 This CP is useful when creating another CP to determine if any query params have changed from their default values:
 
 ```js
-queryParamsChanged: Ember.computed.or(
-  'queryParamsState.{page,search,tags}.changed'
-);
+queryParamsChanged: or('queryParamsState.{page,search,tags}.changed');
 ```
 
 You can then use this CP to conditionally display a button that can clear all query params to their default values.
@@ -402,18 +452,18 @@ export default Controller.extend(myQueryParams.Mixin, {
 The controller also emits an event for each hook which receives the same arguments:
 
 ```ts
-export default Ember.Controller.extend({
-  onChange: Ember.on('queryParamsDidChange', function(
+export default Controller.extend({
+  onChange: on('queryParamsDidChange', function(
     queryParamsChangedEvent: ParachuteEvent
   ) {
     // ...
   }),
 
-  onSetup: Ember.on('setup', function(queryParamsChangedEvent: ParachuteEvent) {
+  onSetup: on('setup', function(queryParamsChangedEvent: ParachuteEvent) {
     // ...
   }),
 
-  onReset: Ember.on('reset', function(
+  onReset: on('reset', function(
     queryParamsChangedEvent: ParachuteEvent,
     isExiting: boolean
   ) {
@@ -445,10 +495,8 @@ function resetQueryParams(params?: string[]): void;
 Reset all or given params to their default value. The second argument is an array of query params to reset. If empty, all query params will be reset. You can use this in an action to reset query params when they have changed:
 
 ```js
-export default Ember.Controller.extend(myQueryParams.Mixin, {
-  queryParamsChanged: Ember.computed.or(
-    'queryParamsState.{page,search,tags}.changed'
-  ),
+export default Controller.extend(myQueryParams.Mixin, {
+  queryParamsChanged: or('queryParamsState.{page,search,tags}.changed'),
 
   actions: {
     resetAll() {

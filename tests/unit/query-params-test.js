@@ -56,13 +56,6 @@ module('Unit | QueryParams', function(hooks) {
     controller = Controller.create();
   });
 
-  test('asserts', function(assert) {
-    assert.expect(2);
-
-    assert.throws(() => new QueryParams({ foo: {} }));
-    assert.throws(() => QueryParams.queryParamsFor(EmberObject.create()));
-  });
-
   test('create', function(assert) {
     assert.expect(2);
 
