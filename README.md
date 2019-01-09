@@ -183,7 +183,7 @@ Each query param is defined as follows (using TypeScript notation for documentin
 ```ts
 interface QueryParamOption {
   as?: string;
-  defaultValue: any; // required
+  defaultValue?: any;
   refresh?: boolean;
   replace?: boolean;
   scope?: 'controller';
