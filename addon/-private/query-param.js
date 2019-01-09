@@ -1,13 +1,9 @@
 import { get } from '@ember/object';
 import { assert } from '@ember/debug';
-import { isPresent, isEmpty } from '@ember/utils';
+import { isPresent } from '@ember/utils';
 import Ember from 'ember';
 
 const { canInvoke } = Ember;
-
-const { keys } = Object;
-
-const REQUIRED_PROPS = ['defaultValue'];
 
 /**
  * Normalized query param object.
@@ -20,10 +16,6 @@ export default class QueryParam {
     assert(
       `[ember-parachute] You must specify a key to the QueryParam Class`,
       isPresent(key)
-    );
-    assert(
-      `[ember-parachute] You must specify all required fields for the query param: '${key}'`,
-      this._validateOptions(options)
     );
 
     /** @type {string} */
@@ -87,22 +79,5 @@ export default class QueryParam {
    */
   toString() {
     return `QueryParam<${this.key}>`;
-  }
-
-  /**
-   * Validate required options.
-   *
-   * @private
-   * @param {object} options
-   * @returns {boolean}
-   *
-   * @memberof QueryParam
-   */
-  _validateOptions(options) {
-    let optionKeys = keys(options);
-    return (
-      !isEmpty(optionKeys) &&
-      REQUIRED_PROPS.every(p => optionKeys.indexOf(p) > -1)
-    );
   }
 }
