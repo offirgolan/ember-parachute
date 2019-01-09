@@ -95,7 +95,6 @@ export default class QueryParams {
    * @memberof QueryParams
    */
   static lookupQueryParam(controller, urlKey) {
-    /** @type {ParachuteMeta} */
     let { queryParamsArray } = this.metaFor(controller);
 
     return queryParamsArray.findBy('as', urlKey);
@@ -111,7 +110,6 @@ export default class QueryParams {
    * @returns {object}
    */
   static queryParamsFor(controller) {
-    /** @type {ParachuteMeta} */
     let { queryParamsArray } = this.metaFor(controller);
 
     return queryParamsArray.reduce(
@@ -147,9 +145,7 @@ export default class QueryParams {
    * @param  {string[]} params Array of QPs to reset. If empty, all QPs will be reset.
    */
   static resetParamsFor(controller, params = []) {
-    /** @type {ParachuteMeta} */
     let { queryParamsArray } = this.metaFor(controller);
-    /** @type {object} */
     let defaults = queryParamsArray.reduce(
       (defaults, qp) => {
         if (isEmpty(params) || params.indexOf(qp.key) > -1) {
@@ -176,7 +172,6 @@ export default class QueryParams {
    * @returns {void}
    */
   static setDefaultValue(controller, param, defaultValue) {
-    /** @type {ParachuteMeta} */
     let { queryParams } = this.metaFor(controller);
     assert(
       `[ember-parachute] The query parameter '${param}' does not exist.`,
@@ -210,7 +205,6 @@ export default class QueryParams {
       qpMapForController
     } = this._generateMeta();
 
-    /** @type {Ember.Mixin} */
     let ControllerMixin = Mixin.create(defaultValues, {
       /**
        * @private
