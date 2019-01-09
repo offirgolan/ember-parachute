@@ -56,13 +56,6 @@ module('Unit | QueryParams', function(hooks) {
     controller = Controller.create();
   });
 
-  test('asserts', function(assert) {
-    assert.expect(2);
-
-    assert.throws(() => new QueryParams({ foo: {} }));
-    assert.throws(() => QueryParams.queryParamsFor(EmberObject.create()));
-  });
-
   test('create', function(assert) {
     assert.expect(2);
 
@@ -93,8 +86,6 @@ module('Unit | QueryParams', function(hooks) {
     assert.expect(1);
 
     let QP = new QueryParams({ foo: { defaultValue: 1 } });
-
-    // eslint-disable-next-line ember/avoid-leaking-state-in-ember-objects
     QP = QP.extend({ bar: { defaultValue: 1 } }, { baz: { defaultValue: 1 } });
 
     assert.deepEqual(keys(QP.queryParams), ['foo', 'bar', 'baz']);
