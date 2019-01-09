@@ -1,27 +1,24 @@
+import Route from '@ember/routing/route';
+import RSVP from 'rsvp';
+import { run } from '@ember/runloop';
+import { assign } from '@ember/polyfills';
+import { tryInvoke } from '@ember/utils';
+import { sendEvent } from '@ember/object/events';
 import Ember from 'ember';
 import QueryParams from '../query-params';
 import ParachuteEvent from '../-private/parachute-event';
 import lookupController from '../utils/lookup-controller';
 
-const {
-  RSVP,
-  run,
-  assign,
-  canInvoke,
-  tryInvoke,
-  sendEvent
-} = Ember;
+const { canInvoke } = Ember;
 
-const {
-  keys
-} = Object;
+const { keys } = Object;
 
 export function initialize(/* application */) {
-  if (Ember.Route._didInitializeParachute) {
+  if (Route._didInitializeParachute) {
     return;
   }
 
-  Ember.Route.reopen({
+  Route.reopen({
     /**
      * Setup the route's `queryParams` map and call the `setup` hook
      * on the controller.
@@ -89,7 +86,7 @@ export function initialize(/* application */) {
       // If so, don't return a promise as it will result in
       // the loading screen/state flashing.
       if (!transition.handlerInfos.find(x => !x.handler)) {
-          return this._super(params, transition);
+        return this._super(params, transition);
       }
 
       // Save and bind the refence to the super here
@@ -97,9 +94,9 @@ export function initialize(/* application */) {
       // https://github.com/emberjs/ember.js/issues/15291
       const actualSuper = this._super.bind(this);
 
-      return RSVP.all(
-        transition.handlerInfos.map(x => x.handlerPromise)
-      ).then(() => actualSuper(params, transition));
+      return RSVP.all(transition.handlerInfos.map(x => x.handlerPromise)).then(
+        () => actualSuper(params, transition)
+      );
     },
 
     /**
@@ -111,7 +108,7 @@ export function initialize(/* application */) {
      * @param {string} urlKey
      * @returns {any}
      */
-    serializeQueryParam(value, urlKey/**, defaultValueType **/) {
+    serializeQueryParam(value, urlKey /**, defaultValueType **/) {
       let controller = lookupController(this);
 
       if (QueryParams.hasParachute(controller)) {
@@ -134,7 +131,7 @@ export function initialize(/* application */) {
      * @param {string} urlKey
      * @returns {any}
      */
-    deserializeQueryParam(value, urlKey/**, defaultValueType **/) {
+    deserializeQueryParam(value, urlKey /**, defaultValueType **/) {
       let controller = lookupController(this);
 
       if (QueryParams.hasParachute(controller)) {
@@ -199,11 +196,15 @@ export function initialize(/* application */) {
        * @param {object} [removed={}]
        * @returns {any}
        */
-      queryParamsDidChange(changed = {}, present = {}, removed = {}) {
+      queryParamsDidChange(changed = {}, _, removed = {}) {
         let { controller, routeName } = this;
 
         if (QueryParams.hasParachute(controller)) {
-          this._scheduleParachuteChangeEvent(routeName, controller, assign({}, changed, removed));
+          this._scheduleParachuteChangeEvent(
+            routeName,
+            controller,
+            assign({}, changed, removed)
+          );
         }
 
         return this._super(...arguments);
@@ -211,7 +212,7 @@ export function initialize(/* application */) {
     }
   });
 
-  Ember.Route.reopenClass({ _didInitializeParachute: true })
+  Route.reopenClass({ _didInitializeParachute: true });
 }
 
 export default {

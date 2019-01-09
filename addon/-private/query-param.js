@@ -1,18 +1,13 @@
+import { get } from '@ember/object';
+import { assert } from '@ember/debug';
+import { isPresent, isEmpty } from '@ember/utils';
 import Ember from 'ember';
 
-const {
-  get,
-  assert,
-  isEmpty,
-  isPresent,
-  canInvoke
-} = Ember;
+const { canInvoke } = Ember;
 
-const {
-  keys
-} = Object;
+const { keys } = Object;
 
-const REQUIRED_PROPS = [ 'defaultValue' ];
+const REQUIRED_PROPS = ['defaultValue'];
 
 /**
  * Normalized query param object.
@@ -22,8 +17,14 @@ const REQUIRED_PROPS = [ 'defaultValue' ];
  */
 export default class QueryParam {
   constructor(key, options = {}) {
-    assert(`[ember-parachute] You must specify a key to the QueryParam Class`, isPresent(key));
-    assert(`[ember-parachute] You must specify all required fields for the query param: '${key}'`, this._validateOptions(options));
+    assert(
+      `[ember-parachute] You must specify a key to the QueryParam Class`,
+      isPresent(key)
+    );
+    assert(
+      `[ember-parachute] You must specify all required fields for the query param: '${key}'`,
+      this._validateOptions(options)
+    );
 
     /** @type {string} */
     this.key = key;
@@ -72,7 +73,9 @@ export default class QueryParam {
    */
   serializedValue(controller) {
     const value = this.value(controller);
-    return canInvoke(this, 'serialize') ? this.serialize(value, controller) : value;
+    return canInvoke(this, 'serialize')
+      ? this.serialize(value, controller)
+      : value;
   }
 
   /**
@@ -97,6 +100,9 @@ export default class QueryParam {
    */
   _validateOptions(options) {
     let optionKeys = keys(options);
-    return !isEmpty(optionKeys) && REQUIRED_PROPS.every(p => optionKeys.indexOf(p) > -1);
+    return (
+      !isEmpty(optionKeys) &&
+      REQUIRED_PROPS.every(p => optionKeys.indexOf(p) > -1)
+    );
   }
 }

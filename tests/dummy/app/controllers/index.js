@@ -1,11 +1,8 @@
-import Ember from 'ember';
+import { or } from '@ember/object/computed';
+import Controller from '@ember/controller';
+import { A } from '@ember/array';
 import QueryParams from 'ember-parachute';
 import { task, timeout } from 'ember-concurrency';
-
-const {
-  computed,
-  A: emberArray
-} = Ember;
 
 const queryParams = new QueryParams({
   parachuteOpen: {
@@ -33,13 +30,13 @@ const queryParams = new QueryParams({
       return value.toString();
     },
     deserialize(value = '') {
-      return emberArray(value.split(','));
+      return value.split(',');
     }
   }
 });
 
-export default Ember.Controller.extend(queryParams.Mixin, {
-  queryParamsChanged: computed.or('queryParamsState.{page,search,tags}.changed'),
+export default Controller.extend(queryParams.Mixin, {
+  queryParamsChanged: or('queryParamsState.{page,search,tags}.changed'),
 
   setup({ queryParams }) {
     if (queryParams.parachuteOpen) {
@@ -59,17 +56,17 @@ export default Ember.Controller.extend(queryParams.Mixin, {
     }
   },
 
-  fetchModel: task(function *() {
+  fetchModel: task(function*() {
     yield timeout(1000);
   }).restartable(),
 
   actions: {
     addTag(tag) {
-      this.get('tags').addObject(tag);
+      A(this.tags).addObject(tag);
     },
 
     removeTag(tag) {
-      this.get('tags').removeObject(tag);
+      A(this.tags).removeObject(tag);
     },
 
     resetAll() {
@@ -77,8 +74,8 @@ export default Ember.Controller.extend(queryParams.Mixin, {
     },
 
     setDefaults() {
-      ['search', 'page', 'tags'].forEach((key) => {
-        let value = (key === 'tags') ? this.get(key).concat() : this.get(key);
+      ['search', 'page', 'tags'].forEach(key => {
+        let value = key === 'tags' ? this.get(key).concat() : this.get(key);
         this.setDefaultQueryParamValue(key, value);
       });
     }

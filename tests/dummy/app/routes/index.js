@@ -1,11 +1,8 @@
-import Ember from 'ember';
+import Route from '@ember/routing/route';
+import { run } from '@ember/runloop';
+import { Promise } from 'rsvp';
 
-const {
-  run,
-  RSVP: { Promise }
-} = Ember;
-
-export default Ember.Route.extend({
+export default Route.extend({
   queryParams: {
     page: { refreshModel: true },
     tags: { refreshModel: true },

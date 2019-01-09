@@ -1,13 +1,7 @@
-import Ember from 'ember';
+import { A as emberArray } from '@ember/array';
 import QueryParam from './query-param';
 
-const {
-  A: emberArray
-} = Ember;
-
-const {
-  keys
-} = Object;
+const { keys } = Object;
 
 /**
  * Meta class used by ember-parachute.
@@ -31,26 +25,37 @@ export default class ParachuteMeta {
     }, {});
 
     /** @type {Ember.NativeArray} */
-    this.queryParamsArray = emberArray(keys(this.queryParams).map((key) => {
-      return this.queryParams[key];
-    }));
+    this.queryParamsArray = emberArray(
+      keys(this.queryParams).map(key => {
+        return this.queryParams[key];
+      })
+    );
 
     /** @type {object} */
-    this.qpMapForController = this.queryParamsArray.reduce((qps, { key, as, scope }) => {
-      qps[key] = { as, scope };
-      return qps;
-    }, {});
+    this.qpMapForController = this.queryParamsArray.reduce(
+      (qps, { key, as, scope }) => {
+        qps[key] = { as, scope };
+        return qps;
+      },
+      {}
+    );
 
     /** @type {object} */
-    this.qpMapForRoute = this.queryParamsArray.reduce((qps, { key, replace }) => {
-      qps[key] = { replace };
-      return qps;
-    }, {});
+    this.qpMapForRoute = this.queryParamsArray.reduce(
+      (qps, { key, replace }) => {
+        qps[key] = { replace };
+        return qps;
+      },
+      {}
+    );
 
     /** @type {object} */
-    this.defaultValues = this.queryParamsArray.reduce((defaults, { key, defaultValue }) => {
-      defaults[key] = defaultValue;
-      return defaults;
-    }, {});
+    this.defaultValues = this.queryParamsArray.reduce(
+      (defaults, { key, defaultValue }) => {
+        defaults[key] = defaultValue;
+        return defaults;
+      },
+      {}
+    );
   }
 }

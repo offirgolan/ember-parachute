@@ -1,6 +1,5 @@
-import Ember from 'ember';
-
-const { get, getOwner } = Ember;
+import { get } from '@ember/object';
+import { getOwner } from '@ember/application';
 
 /**
  * Lookup controller on route.
@@ -20,8 +19,11 @@ export default function lookupController(route, ownerLookupFn = getOwner) {
      * (especially with authentication) due to the controller being created
      * prematurely.
      */
-    let controllerName = get(route, 'controllerName') || get(route, 'routeName');
-    let factory = ownerLookupFn(route).factoryFor(`controller:${controllerName}`);
+    let controllerName =
+      get(route, 'controllerName') || get(route, 'routeName');
+    let factory = ownerLookupFn(route).factoryFor(
+      `controller:${controllerName}`
+    );
     return factory.class.proto();
   }
 

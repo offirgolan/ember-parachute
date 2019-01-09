@@ -1,20 +1,14 @@
+import Mixin from '@ember/object/mixin';
+import { assign } from '@ember/polyfills';
+import { assert } from '@ember/debug';
+import { isPresent, isEmpty } from '@ember/utils';
+import { setProperties, computed, set, get } from '@ember/object';
 import Ember from 'ember';
 import { HAS_PARACHUTE, PARACHUTE_META } from './-private/symbols';
 import ParachuteMeta from './-private/parachute-meta';
 import queryParamsStateFor from './-private/state';
 
-const {
-  get,
-  set,
-  Mixin,
-  assign,
-  assert,
-  isEmpty,
-  computed,
-  isPresent,
-  setProperties,
-  NAME_KEY
-} = Ember;
+const { NAME_KEY } = Ember;
 
 const { keys } = Object;
 
@@ -68,7 +62,10 @@ export default class QueryParams {
    * @returns {ParachuteMeta}
    */
   static metaFor(controller) {
-    assert(`[ember-parachute] The controller '${controller}' is not set up with ember-parachute.`, this.hasParachute(controller));
+    assert(
+      `[ember-parachute] The controller '${controller}' is not set up with ember-parachute.`,
+      this.hasParachute(controller)
+    );
     return get(controller, PARACHUTE_META);
   }
 
@@ -117,10 +114,14 @@ export default class QueryParams {
     /** @type {ParachuteMeta} */
     let { queryParamsArray } = this.metaFor(controller);
 
-    return queryParamsArray.reduce((qps, qp) => {
-      qps[qp.key] = qp.value(controller);
-      return qps;
-    }, {}, undefined);
+    return queryParamsArray.reduce(
+      (qps, qp) => {
+        qps[qp.key] = qp.value(controller);
+        return qps;
+      },
+      {},
+      undefined
+    );
   }
 
   /**
@@ -149,12 +150,16 @@ export default class QueryParams {
     /** @type {ParachuteMeta} */
     let { queryParamsArray } = this.metaFor(controller);
     /** @type {object} */
-    let defaults = queryParamsArray.reduce((defaults, qp) => {
-      if (isEmpty(params) || params.indexOf(qp.key) > -1) {
-        defaults[qp.key] = qp.defaultValue;
-      }
-      return defaults;
-    }, {}, undefined);
+    let defaults = queryParamsArray.reduce(
+      (defaults, qp) => {
+        if (isEmpty(params) || params.indexOf(qp.key) > -1) {
+          defaults[qp.key] = qp.defaultValue;
+        }
+        return defaults;
+      },
+      {},
+      undefined
+    );
 
     setProperties(controller, defaults);
   }
@@ -173,7 +178,10 @@ export default class QueryParams {
   static setDefaultValue(controller, param, defaultValue) {
     /** @type {ParachuteMeta} */
     let { queryParams } = this.metaFor(controller);
-    assert(`[ember-parachute] The query parameter '${param}' does not exist.`, queryParams[param]);
+    assert(
+      `[ember-parachute] The query parameter '${param}' does not exist.`,
+      queryParams[param]
+    );
     set(queryParams[param], 'defaultValue', defaultValue);
   }
 
@@ -196,7 +204,11 @@ export default class QueryParams {
    * @returns {Ember.Mixin}
    */
   _generateMixin() {
-    let { queryParams, defaultValues, qpMapForController } = this._generateMeta();
+    let {
+      queryParams,
+      defaultValues,
+      qpMapForController
+    } = this._generateMeta();
 
     /** @type {Ember.Mixin} */
     let ControllerMixin = Mixin.create(defaultValues, {
@@ -238,9 +250,13 @@ export default class QueryParams {
        * @public
        * @property {Ember.ComputedProperty}
        */
-      queryParamsState: computed(...keys(queryParams), `${PARACHUTE_META}.queryParamsArray.@each.defaultValue`, function() {
-        return QueryParams.stateFor(this);
-      }).readOnly(),
+      queryParamsState: computed(
+        ...keys(queryParams),
+        `${PARACHUTE_META}.queryParamsArray.@each.defaultValue`,
+        function() {
+          return QueryParams.stateFor(this);
+        }
+      ).readOnly(),
 
       /**
        * Overridable hook that fires when query params change.
