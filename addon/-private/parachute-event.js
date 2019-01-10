@@ -29,13 +29,11 @@ export default class ParachuteEvent {
 
     /**
      * The route the event was fired from
-     * @type {string}
      */
     this.routeName = routeName;
 
     /**
      * All query params that have changed from this update event
-     * @type {object}
      */
     this.changed = queryParamsArray.reduce(
       (changedParams, qp) => {
@@ -52,13 +50,11 @@ export default class ParachuteEvent {
 
     /**
      * All Query Params at this given moment
-     * @type {object}
      */
     this.queryParams = QueryParams.queryParamsFor(controller);
 
     /**
      * Whether or not a model refresh should occur
-     * @type {boolean}
      */
     this.shouldRefresh = emberArray(keys(this.changed)).any(
       key => queryParams[key].refresh
@@ -66,7 +62,6 @@ export default class ParachuteEvent {
 
     /**
      * All query params that are not their default
-     * @type {object}
      */
     this.changes = keys(state).reduce((changes, key) => {
       if (state[key].changed) {

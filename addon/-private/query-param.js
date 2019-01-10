@@ -18,28 +18,13 @@ export default class QueryParam {
       isPresent(key)
     );
 
-    /** @type {string} */
     this.key = key;
-
-    /** @type {string} */
     this.as = options.as || key;
-
-    /** @type {"controller" | undefined} */
     this.scope = options.scope;
-
-    /** @type {any} */
     this.defaultValue = options.defaultValue;
-
-    /** @type {boolean} */
     this.refresh = Boolean(options.refresh);
-
-    /** @type {boolean} */
     this.replace = Boolean(options.replace);
-
-    /** @type {function(any): any} */
     this.serialize = options.serialize;
-
-    /** @type {function(any): any} */
     this.deserialize = options.deserialize;
   }
 
