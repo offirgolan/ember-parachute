@@ -82,23 +82,39 @@ export function initialize(/* application */) {
      * @returns {Promise<any>} The model for this route
      */
     deserialize(params, transition) {
-      const { routeInfos } = transition;
+      // RouteInfo was introduced in 3.6 as a public api for HandlerInfo
+      // so we should use that whenever possible.
+      if (transition.routeInfos) {
+        const { routeInfos } = transition;
 
-      // Check if routeInfos have already been loaded.
-      // If so, don't return a promise as it will result in
-      // the loading screen/state flashing.
-      if (routeInfos.every(x => x.isResolved)) {
-        return this._super(params, transition);
+        // Check if routeInfos have already been loaded.
+        // If so, don't return a promise as it will result in
+        // the loading screen/state flashing.
+        if (routeInfos.every(x => x.isResolved)) {
+          return this._super(params, transition);
+        }
+
+        // Save and bind the refence to the super here
+        // as this._super doesn't work in callbacks
+        // https://github.com/emberjs/ember.js/issues/15291
+        const _super = this._super.bind(this);
+
+        return RSVP.all(routeInfos.map(x => x.routePromise)).then(() =>
+          _super(params, transition)
+        );
+      } else {
+        const { handlerInfos } = transition;
+
+        if (!handlerInfos.find(x => !x.handler)) {
+          return this._super(params, transition);
+        }
+
+        const _super = this._super.bind(this);
+
+        return RSVP.all(handlerInfos.map(x => x.handlerPromise)).then(() =>
+          _super(params, transition)
+        );
       }
-
-      // Save and bind the refence to the super here
-      // as this._super doesn't work in callbacks
-      // https://github.com/emberjs/ember.js/issues/15291
-      const _super = this._super.bind(this);
-
-      return RSVP.all(routeInfos.map(x => x.routePromise)).then(() =>
-        _super(params, transition)
-      );
     },
 
     /**
