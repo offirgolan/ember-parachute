@@ -71,9 +71,9 @@ export function initialize(/* application */) {
     },
 
     /**
-     * For Engines support. `transition.handlerInfos` is used to compute
+     * For Engines support. `transition.routeInfos` is used to compute
      * the query params that will be injected into a controller. In lazily
-     * loaded engines, handlerInfos may be promises that don't contain the required
+     * loaded engines, routeInfos may be promises that don't contain the required
      * information. Resolve them here to guarantee parachute can properly function.
      *
      * @method deserialize
@@ -82,20 +82,22 @@ export function initialize(/* application */) {
      * @returns {Promise<any>} The model for this route
      */
     deserialize(params, transition) {
-      // Check if handlers have already been loaded.
+      const { routeInfos } = transition;
+
+      // Check if routeInfos have already been loaded.
       // If so, don't return a promise as it will result in
       // the loading screen/state flashing.
-      if (!transition.handlerInfos.find(x => !x.handler)) {
+      if (routeInfos.every(x => x.isResolved)) {
         return this._super(params, transition);
       }
 
       // Save and bind the refence to the super here
       // as this._super doesn't work in callbacks
       // https://github.com/emberjs/ember.js/issues/15291
-      const actualSuper = this._super.bind(this);
+      const _super = this._super.bind(this);
 
-      return RSVP.all(transition.handlerInfos.map(x => x.handlerPromise)).then(
-        () => actualSuper(params, transition)
+      return RSVP.all(routeInfos.map(x => x.routePromise)).then(() =>
+        _super(params, transition)
       );
     },
 
