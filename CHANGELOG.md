@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.0
+
+### Pull Requests
+
+- [#68](https://github.com/offirgolan/ember-parachute/pull/68) chore: Upgrade to 3.6 _by [Offir Golan](https://github.com/offirgolan)_
+- [#69](https://github.com/offirgolan/ember-parachute/pull/69) feat: `queryParam` & `withParachute` decorators _by [Offir Golan](https://github.com/offirgolan)_
+- [#71](https://github.com/offirgolan/ember-parachute/pull/71) fix: Use `RouteInfo` api over `HandlerInfo` when possible _by [Offir Golan](https://github.com/offirgolan)_
+
 ## v0.3.8
 
 ### Pull Requests
