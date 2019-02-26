@@ -32,8 +32,8 @@ module('Unit | Decorators', function() {
     });
 
     test('it works', function(assert) {
-      assert.ok(typeof controller.setup === 'function');
-      assert.ok(typeof controller.reset === 'function');
+      assert.ok(typeof controller.resetQueryParams === 'function');
+      assert.ok(typeof controller.setDefaultQueryParamValue === 'function');
       assert.ok(QueryParams.metaFor(controller));
     });
   });

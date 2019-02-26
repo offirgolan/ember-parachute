@@ -253,30 +253,6 @@ export default class QueryParams {
       ).readOnly(),
 
       /**
-       * Overridable hook that fires when query params change.
-       *
-       * @public
-       * @returns {void}
-       */
-      queryParamsDidChange() {},
-
-      /**
-       * Overridable hook that fires after the route calls `setupController`
-       *
-       * @public
-       * @returns {void}
-       */
-      setup() {},
-
-      /**
-       * Overridable hook that fires after the route calls `resetController`
-       *
-       * @public
-       * @returns {void}
-       */
-      reset() {},
-
-      /**
        * Reset query params to their default value. Accepts an optional array
        * of query param keys to reset.
        *
