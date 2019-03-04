@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.1
+
+### Pull Requests
+
+- [#75](https://github.com/offirgolan/ember-parachute/pull/75) Remove NAME*KEY usage \_by [efx](https://github.com/efx)*
+
 ## v1.0.0
 
 ### Pull Requests
