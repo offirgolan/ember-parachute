@@ -7,7 +7,6 @@ import { HAS_PARACHUTE, PARACHUTE_META } from './-private/symbols';
 import ParachuteMeta from './-private/parachute-meta';
 import queryParamsStateFor from './-private/state';
 
-
 const { keys } = Object;
 
 /**
@@ -251,30 +250,6 @@ export default class QueryParams {
       ).readOnly(),
 
       /**
-       * Overridable hook that fires when query params change.
-       *
-       * @public
-       * @returns {void}
-       */
-      queryParamsDidChange() {},
-
-      /**
-       * Overridable hook that fires after the route calls `setupController`
-       *
-       * @public
-       * @returns {void}
-       */
-      setup() {},
-
-      /**
-       * Overridable hook that fires after the route calls `resetController`
-       *
-       * @public
-       * @returns {void}
-       */
-      reset() {},
-
-      /**
        * Reset query params to their default value. Accepts an optional array
        * of query param keys to reset.
        *
@@ -297,7 +272,6 @@ export default class QueryParams {
         QueryParams.setDefaultValue(this, key, defaultValue);
       }
     });
-
 
     return ControllerMixin;
   }
