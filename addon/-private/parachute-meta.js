@@ -1,5 +1,6 @@
 import { A as emberArray } from '@ember/array';
 import QueryParam from './query-param';
+import { PARACHUTE_QPS } from './symbols';
 
 const { keys } = Object;
 
@@ -35,6 +36,11 @@ export default class ParachuteMeta {
       },
       {}
     );
+
+    // Meta info used by the decorators
+    Object.defineProperty(this.qpMapForController, PARACHUTE_QPS, {
+      value: true
+    });
 
     this.qpMapForRoute = this.queryParamsArray.reduce(
       (qps, { key, replace }) => {
