@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.2
+
+### Pull Requests
+
+- [#79](https://github.com/offirgolan/ember-parachute/pull/79) fix: Handle multiple queryParams created by applying multiple mixins _by [Offir Golan](https://github.com/offirgolan)_
+
 ## v1.0.1
 
 ### Pull Requests
