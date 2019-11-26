@@ -1,12 +1,10 @@
 import QueryParams from '../query-params';
+import { decoratorWithParams } from '@ember-decorators/utils/decorator';
 
-export default function withParachute(desc) {
-  return {
-    ...desc,
-    finisher(klass) {
-      klass.reopen(new QueryParams().Mixin);
+export const withParachute = decoratorWithParams(target => {
+  target.reopen(new QueryParams().Mixin);
 
-      return klass;
-    }
-  };
-}
+  return target;
+});
+
+export default withParachute;
