@@ -4,54 +4,34 @@ import {
   addQueryParamFor,
   getQueryParamsFor
 } from './-private/query-params-for';
+import { decoratorWithParams } from '@ember-decorators/utils/decorator';
 
-function createDescriptor(desc, qpDefinition) {
-  qpDefinition = qpDefinition || {};
+export const queryParam = decoratorWithParams((target, key, desc, params) => {
+  const qpDefinition = params ? params[0] : {};
 
-  const descriptor = {
-    ...desc,
-    finisher(klass) {
-      addQueryParamFor(klass, desc.key, qpDefinition);
-      klass.reopen(getQueryParamsFor(klass).Mixin);
+  if (typeof desc.initializer === 'function') {
+    qpDefinition.defaultValue = desc.initializer();
+  }
 
-      const proto = klass.proto();
-
-      // Remove duplicate queryParams created by the multiple mixins
-      if (Array.isArray(proto.queryParams)) {
-        const queryParams = A([...proto.queryParams]);
-        const parachuteQueryParams = queryParams.filterBy(PARACHUTE_QPS, true);
-
-        // Keep the newest one
-        parachuteQueryParams.pop();
-        // Remove the old ones
-        queryParams.removeObjects(parachuteQueryParams);
-
-        proto.queryParams = queryParams.toArray();
-      }
-
-      return klass;
-    }
+  desc.initializer = function initializer() {
+    return qpDefinition.defaultValue;
   };
 
-  if (desc.kind === 'field') {
-    if (typeof desc.initializer === 'function') {
-      qpDefinition.defaultValue = desc.initializer();
-    }
+  addQueryParamFor(target, key, qpDefinition);
+  target.reopen(getQueryParamsFor(target).Mixin);
 
-    descriptor.initializer = function initializer() {
-      return qpDefinition.defaultValue;
-    };
+  // Remove duplicate queryParams created by the multiple mixins
+  if (Array.isArray(target.queryParams)) {
+    const queryParams = A([...target.queryParams]);
+    const parachuteQueryParams = queryParams.filterBy(PARACHUTE_QPS, true);
+
+    // Keep the newest one
+    parachuteQueryParams.pop();
+    // Remove the old ones
+    queryParams.removeObjects(parachuteQueryParams);
+
+    target.queryParams = queryParams.toArray();
   }
+});
 
-  return descriptor;
-}
-
-export default function queryParam(qpDefinition) {
-  // Handle `@queryParam` usage
-  if (`${qpDefinition}` === '[object Descriptor]') {
-    return createDescriptor(qpDefinition);
-  }
-
-  // Handle `@queryParam()` usage
-  return desc => createDescriptor(desc, qpDefinition);
-}
+export default queryParam;
