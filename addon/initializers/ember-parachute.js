@@ -40,7 +40,7 @@ export function initialize(/* application */) {
         event.changed = event.changes;
         event.shouldRefresh = true;
 
-        controller.setup?.([event, transition]);
+        controller.setup?.(event, transition);
         sendEvent(controller, 'setup', [event, transition]);
       }
     },
@@ -64,7 +64,7 @@ export function initialize(/* application */) {
         // Overrides
         event.shouldRefresh = false;
 
-        controller.reset?.([event, isExiting]);
+        controller.reset?.(event, isExiting);
         sendEvent(controller, 'reset', [event, isExiting]);
       }
     },
@@ -175,7 +175,7 @@ export function initialize(/* application */) {
       run.schedule('afterRender', this, () => {
         let event = new ParachuteEvent(routeName, controller, changed);
 
-        controller.queryParamsDidChange?.([event]);
+        controller.queryParamsDidChange?.(event);
         sendEvent(controller, 'queryParamsDidChange', [event]);
       });
     },
