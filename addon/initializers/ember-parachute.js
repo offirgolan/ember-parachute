@@ -2,7 +2,6 @@ import Route from '@ember/routing/route';
 import RSVP from 'rsvp';
 import { run } from '@ember/runloop';
 import { assign } from '@ember/polyfills';
-import { tryInvoke } from '@ember/utils';
 import { sendEvent } from '@ember/object/events';
 import Ember from 'ember';
 import QueryParams from '../query-params';
@@ -41,7 +40,7 @@ export function initialize(/* application */) {
         event.changed = event.changes;
         event.shouldRefresh = true;
 
-        tryInvoke(controller, 'setup', [event, transition]);
+        controller.setup?.([event, transition]);
         sendEvent(controller, 'setup', [event, transition]);
       }
     },
@@ -65,7 +64,7 @@ export function initialize(/* application */) {
         // Overrides
         event.shouldRefresh = false;
 
-        tryInvoke(controller, 'reset', [event, isExiting]);
+        controller.reset?.([event, isExiting]);
         sendEvent(controller, 'reset', [event, isExiting]);
       }
     },
@@ -176,7 +175,7 @@ export function initialize(/* application */) {
       run.schedule('afterRender', this, () => {
         let event = new ParachuteEvent(routeName, controller, changed);
 
-        tryInvoke(controller, 'queryParamsDidChange', [event]);
+        controller.queryParamsDidChange?.([event]);
         sendEvent(controller, 'queryParamsDidChange', [event]);
       });
     },
