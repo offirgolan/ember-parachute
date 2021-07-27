@@ -6,6 +6,7 @@ import QueryParams from 'ember-parachute';
 import ParachuteEvent from 'ember-parachute/-private/parachute-event';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import Transition from '@ember/routing/-private/transition';
 
 const queryParams = new QueryParams({
   direction: {
@@ -41,12 +42,15 @@ module('Unit | Route', function(hooks) {
     assert.expect(2);
 
     let controller = QPController.extend({
-      setup(event) {
+      setup(event, transition) {
         assert.ok(event instanceof ParachuteEvent);
+        assert.ok(transition instanceof Transition);
+        debugger
       },
 
-      onSetup: on('setup', function(event) {
+      onSetup: on('setup', function(event, transition) {
         assert.ok(event instanceof ParachuteEvent);
+        assert.ok(transition instanceof Transition);
       })
     }).create();
 

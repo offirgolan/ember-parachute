@@ -1,4 +1,6 @@
 declare module 'ember-parachute' {
+  import Transition from '@ember/routing/-private/transition';
+
   interface QueryParamOption<T> {
     as?: string;
     defaultValue?: T;
@@ -29,10 +31,12 @@ declare module 'ember-parachute' {
 
   export class QueryParamMixin<T> {
     queryParamsState: QueryParamsState<T>;
-    setup(queryParamsChangedEvent: ParachuteEvent<T>): void;
+    setup(queryParamsChangedEvent: ParachuteEvent<T>, transition: Transition): void;
     queryParamsDidChange(queryParamsChangedEvent: ParachuteEvent<T>): void;
     reset(queryParamsChangedEvent: ParachuteEvent<T>, isExiting: boolean): void;
     resetQueryParams(params?: string[]): void;
+
+    get allQueryParams(): T;
   }
 
   export default class QueryParams<T> {
