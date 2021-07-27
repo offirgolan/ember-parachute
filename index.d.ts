@@ -35,6 +35,8 @@ declare module 'ember-parachute' {
     queryParamsDidChange(queryParamsChangedEvent: ParachuteEvent<T>): void;
     reset(queryParamsChangedEvent: ParachuteEvent<T>, isExiting: boolean): void;
     resetQueryParams(params?: string[]): void;
+
+    get allQueryParams(): T;
   }
 
   export default class QueryParams<T> {
