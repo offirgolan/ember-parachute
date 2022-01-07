@@ -1,5 +1,5 @@
 import Route from '@ember/routing/route';
-import { run } from '@ember/runloop';
+import { later } from '@ember/runloop';
 import { Promise } from 'rsvp';
 
 export default Route.extend({
@@ -11,7 +11,7 @@ export default Route.extend({
 
   model({ parachuteOpen }) {
     if (!parachuteOpen) {
-      return new Promise(resolve => run.later(resolve, 1000));
+      return new Promise(resolve => later(resolve, 1000));
     }
   }
 });
