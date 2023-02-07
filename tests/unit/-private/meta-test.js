@@ -67,8 +67,8 @@ module('Unit | Implementation | meta', function() {
     ];
 
     let { queryParamsArray } = new ParachuteMeta(dummyQpMap);
-    assert.propEqual(queryParamsArray.objectAt(0), expectedResult[0]);
-    assert.propEqual(queryParamsArray.objectAt(1), expectedResult[1]);
+    assert.propEqual(queryParamsArray[0], expectedResult[0]);
+    assert.propEqual(queryParamsArray[1], expectedResult[1]);
   });
 
   test('#qpMapForController', function(assert) {

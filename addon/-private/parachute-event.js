@@ -1,8 +1,5 @@
-import { A as emberArray } from '@ember/array';
-import Ember from 'ember';
 import QueryParams from '../query-params';
-
-const { canInvoke } = Ember;
+import { canInvoke } from '../utils/can-invoke';
 
 const { keys } = Object;
 
@@ -25,7 +22,7 @@ export default class ParachuteEvent {
   constructor(routeName, controller, changed = {}) {
     let { queryParams, queryParamsArray } = QueryParams.metaFor(controller);
     let state = QueryParams.stateFor(controller);
-    let changedKeys = emberArray(keys(changed));
+    let changedKeys = keys(changed);
 
     /**
      * The route the event was fired from
@@ -56,7 +53,7 @@ export default class ParachuteEvent {
     /**
      * Whether or not a model refresh should occur
      */
-    this.shouldRefresh = emberArray(keys(this.changed)).any(
+    this.shouldRefresh = keys(this.changed).some(
       key => queryParams[key].refresh
     );
 

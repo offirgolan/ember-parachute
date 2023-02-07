@@ -1,17 +1,13 @@
 import Route from '@ember/routing/route';
-import RSVP from 'rsvp';
-import { run } from '@ember/runloop';
-import { assign } from '@ember/polyfills';
-import { tryInvoke } from '@ember/utils';
+import { schedule } from '@ember/runloop';
 import { sendEvent } from '@ember/object/events';
-import Ember from 'ember';
 import QueryParams from '../query-params';
 import ParachuteEvent from '../-private/parachute-event';
-import lookupController from '../utils/lookup-controller';
+import { lookupController } from '../utils/lookup-controller';
+import { canInvoke } from '../utils/can-invoke';
+import { tryInvoke } from '../utils/try-invoke';
 
-const { canInvoke } = Ember;
-
-const { keys } = Object;
+const { keys, assign } = Object;
 
 export function initialize(/* application */) {
   if (Route._didInitializeParachute) {
@@ -99,7 +95,7 @@ export function initialize(/* application */) {
         // https://github.com/emberjs/ember.js/issues/15291
         const _super = this._super.bind(this);
 
-        return RSVP.all(routeInfos.map(x => x.routePromise)).then(() =>
+        return Promise.all(routeInfos.map(x => x.routePromise)).then(() =>
           _super(params, transition)
         );
       } else {
@@ -111,7 +107,7 @@ export function initialize(/* application */) {
 
         const _super = this._super.bind(this);
 
-        return RSVP.all(handlerInfos.map(x => x.handlerPromise)).then(() =>
+        return Promise.all(handlerInfos.map(x => x.handlerPromise)).then(() =>
           _super(params, transition)
         );
       }
@@ -173,7 +169,7 @@ export function initialize(/* application */) {
      * @returns {void}
      */
     _scheduleParachuteChangeEvent(routeName, controller, changed = {}) {
-      run.schedule('afterRender', this, () => {
+      schedule('afterRender', this, () => {
         let event = new ParachuteEvent(routeName, controller, changed);
 
         tryInvoke(controller, 'queryParamsDidChange', [event]);

@@ -9,7 +9,7 @@ import { getOwner } from '@ember/application';
  * @param {function(any): any} [ownerLookupFn=getOwner]
  * @returns {Ember.Controller}
  */
-export default function lookupController(route, ownerLookupFn = getOwner) {
+export function lookupController(route, ownerLookupFn = getOwner) {
   let controller = get(route, 'controller');
 
   if (!controller) {
