@@ -1,9 +1,8 @@
 import { get } from '@ember/object';
 import { assert } from '@ember/debug';
 import { isPresent } from '@ember/utils';
-import Ember from 'ember';
 
-const { canInvoke } = Ember;
+import { canInvoke } from '../utils/can-invoke';
 
 /**
  * Normalized query param object.

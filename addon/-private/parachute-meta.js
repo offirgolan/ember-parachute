@@ -1,4 +1,3 @@
-import { A as emberArray } from '@ember/array';
 import QueryParam from './query-param';
 import { PARACHUTE_QPS } from './symbols';
 
@@ -23,11 +22,9 @@ export default class ParachuteMeta {
       return qps;
     }, {});
 
-    this.queryParamsArray = emberArray(
-      keys(this.queryParams).map(key => {
-        return this.queryParams[key];
-      })
-    );
+    this.queryParamsArray = keys(this.queryParams).map(key => {
+      return this.queryParams[key];
+    }) ;
 
     this.qpMapForController = this.queryParamsArray.reduce(
       (qps, { key, as, scope }) => {

@@ -1,4 +1,3 @@
-import { A } from '@ember/array';
 import { PARACHUTE_QPS } from 'ember-parachute/-private/symbols';
 import {
   addQueryParamFor,
@@ -18,8 +17,10 @@ function createDescriptor(desc, qpDefinition) {
 
       // Remove duplicate queryParams created by the multiple mixins
       if (Array.isArray(proto.queryParams)) {
-        const queryParams = A([...proto.queryParams]);
-        const parachuteQueryParams = queryParams.filterBy(PARACHUTE_QPS, true);
+        const queryParams = [...proto.queryParams];
+        const parachuteQueryParams = queryParams.filter(queryParam =>
+          queryParam[PARACHUTE_QPS] === true
+        );
 
         // Keep the newest one
         parachuteQueryParams.pop();

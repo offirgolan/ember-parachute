@@ -1,5 +1,5 @@
 import EmberController from '@ember/controller';
-import lookupController from 'ember-parachute/utils/lookup-controller';
+import { lookupController } from 'ember-parachute/utils/lookup-controller';
 import { module, test } from 'qunit';
 
 module('Unit | Utility | lookup controller', function() {

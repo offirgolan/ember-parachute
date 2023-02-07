@@ -94,7 +94,7 @@ export default class QueryParams {
   static lookupQueryParam(controller, urlKey) {
     let { queryParamsArray } = this.metaFor(controller);
 
-    return queryParamsArray.findBy('as', urlKey);
+    return queryParamsArray.find(queryParam => queryParam.as === urlKey);
   }
 
   /**
